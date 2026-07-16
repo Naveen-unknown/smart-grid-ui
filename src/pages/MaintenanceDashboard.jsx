@@ -321,7 +321,7 @@ export default function MaintenanceDashboard() {
                 <button className="btn btn-danger btn-lg btn-full" onClick={() => { toast.error('Job Declined'); setShowAlertModal(false); }}>
                   <FiX size={22} /> Decline Job
                 </button>
-                <button className="btn btn-primary btn-lg btn-full" onClick={() => toast('Navigating to location...', { icon: '🗺️' })}>
+                <button className="btn btn-primary btn-lg btn-full" onClick={() => window.open('https://www.google.com/maps/search/?api=1&query=13.0850,80.2101', '_blank')}>
                   <FiNavigation size={22} /> Navigate to Location
                 </button>
                 <button className="btn btn-outline btn-lg btn-full" onClick={() => toast('Calling Control Room...', { icon: '📞' })}>
