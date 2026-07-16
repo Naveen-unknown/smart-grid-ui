@@ -62,6 +62,14 @@ export default function GridNodes() {
     } catch { toast.error('Failed to update node status'); }
   };
 
+  const handleSendSmsAlert = async (nodeId, e) => {
+    e.stopPropagation();
+    try {
+      const res = await energyAPI.sendNodeSmsAlert(nodeId);
+      toast.success(res.data.message || 'SMS sent successfully');
+    } catch { toast.error('Failed to send SMS'); }
+  };
+
   const typeColors = { Substation: 'badge-blue', Distribution: 'badge-purple', Feeder: 'badge-cyan' };
 
   return (
@@ -103,15 +111,26 @@ export default function GridNodes() {
                         📍 {node.latitude.toFixed(4)}, {node.longitude?.toFixed(4)}
                       </div>
                     )}
-                    {(user?.role === 'Admin' || user?.role === 'Operator') && (
-                      <div style={{ display: 'flex', gap: '6px', marginTop: '12px' }}
+                    {(user?.role === 'Admin' || user?.role === 'Operator' || user?.role === 'Electricity Officer') && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}
                         onClick={e => e.stopPropagation()}>
-                        {['Active', 'Maintenance', 'Inactive'].map(s => (
-                          <button key={s} className={`btn btn-sm ${node.status === s ? 'btn-primary' : 'btn-outline'}`}
-                            onClick={() => handleStatusUpdate(node.id, s)}>
-                            {s}
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          {['Active', 'Maintenance', 'Inactive'].map(s => (
+                            <button key={s} className={`btn btn-sm ${node.status === s ? 'btn-primary' : 'btn-outline'}`}
+                              onClick={() => handleStatusUpdate(node.id, s)}>
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+                        {node.status === 'Maintenance' && (
+                          <button 
+                            className="btn btn-sm btn-outline" 
+                            style={{ borderColor: 'var(--accent-yellow)', color: 'var(--accent-yellow)', width: 'fit-content', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: '6px' }} 
+                            onClick={(e) => handleSendSmsAlert(node.id, e)}
+                          >
+                            <span>📱</span> Send SMS (No Power Today)
                           </button>
-                        ))}
+                        )}
                       </div>
                     )}
                   </div>

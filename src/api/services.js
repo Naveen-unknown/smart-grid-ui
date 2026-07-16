@@ -22,6 +22,7 @@ export const energyAPI = {
   updateNodeStatus: (id, status) =>
     api.patch(`/energy/nodes/${id}/status`, JSON.stringify(status)),
   getNodeSummary: (nodeId) => api.get(`/energy/nodes/${nodeId}/summary`),
+  sendNodeSmsAlert: (nodeId) => api.post(`/energy/nodes/${nodeId}/sms-alert`),
 };
 
 export const faultAPI = {
