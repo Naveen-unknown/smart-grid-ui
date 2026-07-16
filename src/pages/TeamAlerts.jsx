@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../api/axios';
-import { FiMapPin } from 'react-icons/fi';
+import { FiMapPin, FiLogOut } from 'react-icons/fi';
+import { useAuth } from '../context/AuthContext';
 
 export default function TeamAlerts() {
   const [activeAlert, setActiveAlert] = useState(null);
   const [showMap, setShowMap] = useState(false);
+  const { logout } = useAuth();
 
   useEffect(() => {
     // Poll for alerts every 5 seconds
@@ -43,9 +45,20 @@ export default function TeamAlerts() {
 
   return (
     <div className="page-container">
-      <div className="page-header">
-        <h1>Team Alerts</h1>
-        <p>Live alert feed for your maintenance team</p>
+      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <span style={{ color: 'var(--accent-red)' }}>👷</span> Team Alerts
+          </h1>
+          <p>Live alert feed for your maintenance team</p>
+        </div>
+        <button 
+          onClick={logout} 
+          className="btn btn-secondary" 
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px' }}
+        >
+          <FiLogOut /> Logout
+        </button>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>

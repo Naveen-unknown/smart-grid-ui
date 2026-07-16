@@ -29,6 +29,16 @@ function ProtectedRoute({ children }) {
 }
 
 function AppLayout({ children }) {
+  const { user } = useAuth();
+  
+  if (user?.role === 'Maintenance') {
+    return (
+      <div style={{ background: 'var(--bg-primary)', minHeight: '100vh', width: '100%' }}>
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div className="app-layout">
       <Sidebar />
@@ -42,7 +52,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
-      <Route path="/" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
+      <Route path="/" element={<ProtectedRoute>{user?.role === 'Maintenance' ? <Navigate to="/team-alerts" replace /> : <AppLayout><Dashboard /></AppLayout>}</ProtectedRoute>} />
       <Route path="/energy" element={<ProtectedRoute><AppLayout><EnergyReadings /></AppLayout></ProtectedRoute>} />
       <Route path="/nodes" element={<ProtectedRoute><AppLayout><GridNodes /></AppLayout></ProtectedRoute>} />
       <Route path="/faults" element={<ProtectedRoute><AppLayout><FaultManagement /></AppLayout></ProtectedRoute>} />

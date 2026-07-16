@@ -24,7 +24,8 @@ export default function LoginPage() {
       const { data } = res.data;
       login({ id: data.id, username: data.username, email: data.email, role: data.role }, data.token);
       toast.success(`Welcome back, ${data.username}! ⚡`);
-      navigate('/');
+      if (data.role === 'Maintenance') navigate('/team-alerts');
+      else navigate('/');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Invalid credentials');
     } finally { setLoading(false); }
@@ -41,7 +42,8 @@ export default function LoginPage() {
       const { data } = res.data;
       login({ id: data.id, username: data.username, email: data.email, role: data.role }, data.token);
       toast.success('Account created! Welcome to SmartGrid ⚡');
-      navigate('/');
+      if (data.role === 'Maintenance') navigate('/team-alerts');
+      else navigate('/');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration failed');
     } finally { setLoading(false); }
