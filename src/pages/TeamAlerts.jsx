@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../api/axios';
 import { FiMapPin } from 'react-icons/fi';
 
 export default function TeamAlerts() {
@@ -15,7 +15,7 @@ export default function TeamAlerts() {
 
   const fetchTeamAlert = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/Maintenance/tickets');
+      const response = await axios.get('/Maintenance/tickets');
       // For this demo, we assume the Maintenance Team is "Team A" (TeamId = 1)
       const myTickets = response.data.filter(t => t.teamId === 1 && (t.status === 'Assigned' || t.status === 'En Route' || t.status === 'Repairing'));
       if (myTickets.length > 0) {
@@ -120,3 +120,4 @@ export default function TeamAlerts() {
     </div>
   );
 }
+

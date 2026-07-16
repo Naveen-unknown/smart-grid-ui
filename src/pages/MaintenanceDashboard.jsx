@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FiAlertTriangle, FiCheckCircle, FiClock, FiMapPin, FiNavigation, FiPhoneCall, FiX, FiUpload } from 'react-icons/fi';
-import axios from 'axios';
+import axios from '../api/axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
@@ -22,7 +22,7 @@ export default function MaintenanceDashboard() {
 
   const fetchTeams = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/Maintenance/teams');
+      const response = await axios.get('/Maintenance/teams');
       setTeams(response.data);
     } catch (error) {
       console.error('Failed to fetch teams', error);
@@ -40,7 +40,7 @@ export default function MaintenanceDashboard() {
       ];
       setTickets(dummyTickets);
       
-      const response = await axios.get('http://localhost:5000/api/Maintenance/tickets');
+      const response = await axios.get('/Maintenance/tickets');
       if (response.data && response.data.length > 0) {
         setTickets(response.data.map(t => ({
           ticketId: `SG-${new Date().getFullYear()}-${t.ticketId}`,
@@ -62,7 +62,7 @@ export default function MaintenanceDashboard() {
     const formData = new FormData();
     formData.append('proofPhoto', file);
     try {
-      await axios.post(`http://localhost:5000/api/Maintenance/ticket/${rawTicketId}/upload-proof`, formData, {
+      await axios.post(`/Maintenance/ticket/${rawTicketId}/upload-proof`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       toast.success('Proof uploaded and ticket marked as completed!');
@@ -87,7 +87,7 @@ export default function MaintenanceDashboard() {
 
   const testSms = async () => {
     try {
-      const res = await axios.post('http://localhost:5000/api/Maintenance/test-sms');
+      const res = await axios.post('/Maintenance/test-sms');
       toast.success(res.data.message || 'SMS dispatched successfully');
     } catch {
       toast.success('SMS dispatched successfully to 9344255537');
@@ -97,7 +97,7 @@ export default function MaintenanceDashboard() {
   const handleVerifyTicket = async (ticketId) => {
     const rawTicketId = ticketId.toString().split('-').pop();
     try {
-      await axios.post(`http://localhost:5000/api/Maintenance/ticket/${rawTicketId}/verify`);
+      await axios.post(`/Maintenance/ticket/${rawTicketId}/verify`);
       toast.success('Ticket verified and closed successfully!');
       fetchTickets();
     } catch (err) {
@@ -117,7 +117,7 @@ export default function MaintenanceDashboard() {
   const handleAddMember = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:5000/api/Maintenance/teams/${newMember.teamId}/members`, {
+      await axios.post(`/Maintenance/teams/${newMember.teamId}/members`, {
         name: newMember.name,
         role: newMember.role,
         phoneNumber: newMember.phoneNumber
@@ -133,7 +133,7 @@ export default function MaintenanceDashboard() {
   const handleDeleteMember = async (memberId) => {
     if (!window.confirm("Are you sure you want to delete this member?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/Maintenance/members/${memberId}`);
+      await axios.delete(`/Maintenance/members/${memberId}`);
       toast.success('Member deleted successfully');
       fetchTeams();
     } catch (err) {
@@ -144,7 +144,7 @@ export default function MaintenanceDashboard() {
   const handleSendSms = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`http://localhost:5000/api/Maintenance/members/${smsModal.memberId}/sms`, {
+      await axios.post(`/Maintenance/members/${smsModal.memberId}/sms`, {
         message: smsModal.message
       });
       toast.success('SMS sent successfully!');
@@ -168,7 +168,7 @@ export default function MaintenanceDashboard() {
     setShowAlertModal(true);
     try {
       toast.loading("Detecting fault...", { id: "sim" });
-      await axios.post('http://localhost:5000/api/Maintenance/simulate-alert');
+      await axios.post('/Maintenance/simulate-alert');
       toast.success("Fault detected and team assigned!", { id: "sim" });
       fetchTickets();
     } catch(err) {
@@ -244,9 +244,9 @@ export default function MaintenanceDashboard() {
                         {ticket.status === 'Pending Verification' && ticket.proofPhotoUrl && (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <img 
-                              src={ticket.proofPhotoUrl.startsWith('/') ? `http://localhost:5000${ticket.proofPhotoUrl}` : ticket.proofPhotoUrl} 
+                              src={ticket.proofPhotoUrl.startsWith('/') ? `https://smart-grid-api-z8wk.onrender.com${ticket.proofPhotoUrl}` : ticket.proofPhotoUrl} 
                               alt="Proof" 
-                              onClick={() => setPreviewImage(ticket.proofPhotoUrl.startsWith('/') ? `http://localhost:5000${ticket.proofPhotoUrl}` : ticket.proofPhotoUrl)}
+                              onClick={() => setPreviewImage(ticket.proofPhotoUrl.startsWith('/') ? `https://smart-grid-api-z8wk.onrender.com${ticket.proofPhotoUrl}` : ticket.proofPhotoUrl)}
                               style={{ width: '120px', borderRadius: '8px', border: '1px solid var(--border-color)', cursor: 'pointer' }} 
                             />
                             <button className="btn btn-success btn-sm" onClick={() => handleVerifyTicket(ticket.ticketId)}>Verify & Approve</button>
@@ -254,9 +254,9 @@ export default function MaintenanceDashboard() {
                         )}
                         {ticket.status === 'Completed' && ticket.proofPhotoUrl && (
                           <img 
-                            src={ticket.proofPhotoUrl.startsWith('/') ? `http://localhost:5000${ticket.proofPhotoUrl}` : ticket.proofPhotoUrl} 
+                            src={ticket.proofPhotoUrl.startsWith('/') ? `https://smart-grid-api-z8wk.onrender.com${ticket.proofPhotoUrl}` : ticket.proofPhotoUrl} 
                             alt="Proof" 
-                            onClick={() => setPreviewImage(ticket.proofPhotoUrl.startsWith('/') ? `http://localhost:5000${ticket.proofPhotoUrl}` : ticket.proofPhotoUrl)}
+                            onClick={() => setPreviewImage(ticket.proofPhotoUrl.startsWith('/') ? `https://smart-grid-api-z8wk.onrender.com${ticket.proofPhotoUrl}` : ticket.proofPhotoUrl)}
                             style={{ width: '120px', borderRadius: '8px', border: '1px solid var(--border-color)', cursor: 'pointer' }} 
                           />
                         )}
@@ -452,3 +452,4 @@ export default function MaintenanceDashboard() {
     </div>
   );
 }
+
