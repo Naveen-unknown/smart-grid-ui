@@ -10,18 +10,18 @@ export default function Sidebar({ theme, toggleTheme }) {
   const [unreadCount, setUnreadCount] = useState(0);
 
   const navItems = user?.role === 'Maintenance Team' ? [
-    { to: '/', icon: <i className="bi bi-bell-fill"></i>, label: 'Team Alerts', end: true }
+    { to: '/', icon: <i className="bi bi-bell-fill" style={{ color: 'var(--accent-yellow)' }}></i>, label: 'Team Alerts', end: true }
   ] : [
-    { to: '/', icon: <i className="bi bi-grid-1x2-fill"></i>, label: 'Dashboard', end: true },
-    { to: '/energy', icon: <i className="bi bi-lightning-charge-fill"></i>, label: 'Energy Readings' },
-    { to: '/nodes', icon: <i className="bi bi-hdd-network-fill"></i>, label: 'Grid Nodes' },
-    { to: '/faults', icon: <i className="bi bi-wrench-adjustable"></i>, label: 'Fault Management' },
-    { to: '/outages', icon: <i className="bi bi-exclamation-octagon-fill"></i>, label: 'Outage Management' },
-    { to: '/maintenance', icon: <i className="bi bi-people-fill"></i>, label: 'Manage Teams' },
-    { to: '/notifications', icon: <i className="bi bi-bell-fill"></i>, label: 'Alert Center' },
-    { to: '/ai-insights', icon: <i className="bi bi-robot"></i>, label: 'AI Insights' },
-    { to: '/ai-chat', icon: <i className="bi bi-chat-dots-fill"></i>, label: 'AI Chat Assistant' },
-    { to: '/report', icon: <i className="bi bi-clipboard2-data-fill"></i>, label: 'Reports' },
+    { to: '/', icon: <i className="bi bi-grid-1x2-fill" style={{ color: 'var(--accent-blue)' }}></i>, label: 'Dashboard', end: true },
+    { to: '/energy', icon: <i className="bi bi-lightning-charge-fill" style={{ color: 'var(--accent-yellow)' }}></i>, label: 'Energy Readings' },
+    { to: '/nodes', icon: <i className="bi bi-hdd-network-fill" style={{ color: 'var(--accent-green)' }}></i>, label: 'Grid Nodes' },
+    { to: '/faults', icon: <i className="bi bi-wrench-adjustable" style={{ color: 'var(--accent-orange)' }}></i>, label: 'Fault Management' },
+    { to: '/outages', icon: <i className="bi bi-exclamation-octagon-fill" style={{ color: 'var(--accent-red)' }}></i>, label: 'Outage Management' },
+    { to: '/maintenance', icon: <i className="bi bi-people-fill" style={{ color: 'var(--accent-purple)' }}></i>, label: 'Manage Teams' },
+    { to: '/notifications', icon: <i className="bi bi-bell-fill" style={{ color: '#ec4899' }}></i>, label: 'Alert Center' },
+    { to: '/ai-insights', icon: <i className="bi bi-robot" style={{ color: 'var(--accent-cyan)' }}></i>, label: 'AI Insights' },
+    { to: '/ai-chat', icon: <i className="bi bi-chat-dots-fill" style={{ color: 'var(--accent-green)' }}></i>, label: 'AI Chat Assistant' },
+    { to: '/report', icon: <i className="bi bi-clipboard2-data-fill" style={{ color: 'var(--text-secondary)' }}></i>, label: 'Reports' },
   ];
 
   useEffect(() => {
