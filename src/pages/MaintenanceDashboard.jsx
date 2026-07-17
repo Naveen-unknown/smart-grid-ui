@@ -219,20 +219,20 @@ export default function MaintenanceDashboard() {
                         {ticket.status === 'Pending Verification' && ticket.proofPhotoUrl && (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <img 
-                              src={ticket.proofPhotoUrl.startsWith('/') ? `https://smart-grid-api-z8wk.onrender.com${ticket.proofPhotoUrl}` : ticket.proofPhotoUrl} 
+                              src={ticket.proofPhotoUrl.startsWith('blob:') ? ticket.proofPhotoUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${ticket.proofPhotoUrl}`} 
                               alt="Proof" 
-                              onClick={() => setPreviewImage(ticket.proofPhotoUrl.startsWith('/') ? `https://smart-grid-api-z8wk.onrender.com${ticket.proofPhotoUrl}` : ticket.proofPhotoUrl)}
-                              style={{ width: '120px', borderRadius: '8px', border: '1px solid var(--border-color)', cursor: 'pointer' }} 
+                              onClick={() => setPreviewImage(ticket.proofPhotoUrl.startsWith('blob:') ? ticket.proofPhotoUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${ticket.proofPhotoUrl}`)}
+                              style={{ width: '120px', borderRadius: '8px', border: '1px solid var(--border-color)', cursor: 'pointer', objectFit: 'cover', height: '80px' }} 
                             />
                             <button className="btn btn-success btn-sm" onClick={() => handleVerifyTicket(ticket.ticketId)}>Verify & Approve</button>
                           </div>
                         )}
                         {ticket.status === 'Completed' && ticket.proofPhotoUrl && (
                           <img 
-                            src={ticket.proofPhotoUrl.startsWith('/') ? `https://smart-grid-api-z8wk.onrender.com${ticket.proofPhotoUrl}` : ticket.proofPhotoUrl} 
+                            src={ticket.proofPhotoUrl.startsWith('blob:') ? ticket.proofPhotoUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${ticket.proofPhotoUrl}`} 
                             alt="Proof" 
-                            onClick={() => setPreviewImage(ticket.proofPhotoUrl.startsWith('/') ? `https://smart-grid-api-z8wk.onrender.com${ticket.proofPhotoUrl}` : ticket.proofPhotoUrl)}
-                            style={{ width: '120px', borderRadius: '8px', border: '1px solid var(--border-color)', cursor: 'pointer' }} 
+                            onClick={() => setPreviewImage(ticket.proofPhotoUrl.startsWith('blob:') ? ticket.proofPhotoUrl : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${ticket.proofPhotoUrl}`)}
+                            style={{ width: '120px', borderRadius: '8px', border: '1px solid var(--border-color)', cursor: 'pointer', objectFit: 'cover', height: '80px' }} 
                           />
                         )}
                       </td>

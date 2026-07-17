@@ -7,13 +7,62 @@ export default function TeamAlerts() {
   const [alerts, setAlerts] = useState([]);
   const [showMap, setShowMap] = useState(false);
   const [activeMapAlert, setActiveMapAlert] = useState(null);
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+  
+  const [profile, setProfile] = useState(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileForm, setProfileForm] = useState({ name: '', role: 'Field Technician', phoneNumber: '', teamId: 1 });
+  
+  const [showResolveModal, setShowResolveModal] = useState(false);
+  const [activeTicket, setActiveTicket] = useState(null);
+  const [proofPhoto, setProofPhoto] = useState(null);
 
   useEffect(() => {
     fetchTeamAlerts();
     const interval = setInterval(fetchTeamAlerts, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      axios.get(`/Maintenance/profile/${user.id}`)
+        .then(res => setProfile(res.data))
+        .catch(err => {
+          if (err.response?.status === 404) setShowProfileModal(true);
+        });
+    }
+  }, [user]);
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('/Maintenance/profile', { ...profileForm, userId: user.id });
+      setProfile(res.data);
+      setShowProfileModal(false);
+      toast.success('Profile setup complete!');
+    } catch (err) {
+      toast.error('Failed to setup profile.');
+    }
+  };
+
+  const handleResolveJob = async (e) => {
+    e.preventDefault();
+    if (!proofPhoto) return toast.error('Please select a photo proof.');
+    
+    const formData = new FormData();
+    formData.append('proofPhoto', proofPhoto);
+    const rawTicketId = activeTicket.ticketId.toString().split('-').pop();
+    
+    try {
+      await axios.post(`/Maintenance/ticket/${rawTicketId}/upload-proof`, formData);
+      toast.success('Job marked as completed pending verification!');
+      setShowResolveModal(false);
+      setProofPhoto(null);
+      fetchTeamAlerts();
+    } catch (err) {
+      toast.error('Failed to upload proof.');
+    }
+  };
 
   const fetchTeamAlerts = async () => {
     try {
@@ -42,8 +91,7 @@ export default function TeamAlerts() {
   };
 
   const handleAcceptJob = async (ticketId) => {
-    const engineerName = window.prompt("Enter your name to confirm dispatch:");
-    if (!engineerName) return;
+    const engineerName = profile?.name || "Maintenance Engineer";
 
     const rawTicketId = ticketId.toString().split('-').pop(); // Handle formatted IDs like SG-2026-1024
     
@@ -141,6 +189,19 @@ export default function TeamAlerts() {
                   <i className="bi bi-check-circle-fill"></i> Accept Job
                 </button>
               )}
+
+              {alert.status === 'En Route' && (
+                <button 
+                  className="btn btn-warning btn-lg" 
+                  style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '8px' }}
+                  onClick={() => {
+                    setActiveTicket(alert);
+                    setShowResolveModal(true);
+                  }}
+                >
+                  <i className="bi bi-camera-fill"></i> Resolve & Upload Proof
+                </button>
+              )}
               
               <button 
                 className={alert.status === 'Assigned' ? "btn btn-outline btn-lg" : "btn btn-primary btn-lg"} 
@@ -171,6 +232,62 @@ export default function TeamAlerts() {
                 marginWidth="0" 
                 src={`https://maps.google.com/maps?q=${activeMapAlert.latitude || 8.1833},${activeMapAlert.longitude || 77.4119}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
               ></iframe>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showProfileModal && (
+        <div className="modal-overlay">
+          <div className="modal" style={{ maxWidth: '400px' }}>
+            <div className="modal-header">
+              <h2 className="modal-title">Setup Your Profile</h2>
+            </div>
+            <div className="modal-body">
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>Please complete your profile to continue receiving alerts.</p>
+              <form onSubmit={handleSaveProfile}>
+                <div className="form-group" style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Full Name</label>
+                  <input type="text" className="form-control" required value={profileForm.name} onChange={e => setProfileForm({...profileForm, name: e.target.value})} placeholder="e.g. John Doe" />
+                </div>
+                <div className="form-group" style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Phone Number</label>
+                  <input type="text" className="form-control" required value={profileForm.phoneNumber} onChange={e => setProfileForm({...profileForm, phoneNumber: e.target.value})} placeholder="+1 234 567 890" />
+                </div>
+                <div className="form-group" style={{ marginBottom: '24px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Role</label>
+                  <select className="form-control" value={profileForm.role} onChange={e => setProfileForm({...profileForm, role: e.target.value})}>
+                    <option>Field Technician</option>
+                    <option>Senior Engineer</option>
+                    <option>Dispatcher</option>
+                  </select>
+                </div>
+                <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Save Profile</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showResolveModal && activeTicket && (
+        <div className="modal-overlay" onClick={() => setShowResolveModal(false)}>
+          <div className="modal" style={{ maxWidth: '500px' }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2 className="modal-title">Resolve Ticket {activeTicket.ticketId}</h2>
+              <button className="close-btn" onClick={() => setShowResolveModal(false)}><i className="bi bi-x-lg"></i></button>
+            </div>
+            <div className="modal-body">
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>Upload a photo of the completed repair to submit for verification.</p>
+              <form onSubmit={handleResolveJob}>
+                <div className="form-group" style={{ marginBottom: '24px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Proof Photo</label>
+                  <input type="file" accept="image/*" capture="environment" className="form-control" onChange={e => setProofPhoto(e.target.files[0])} required />
+                </div>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                  <button type="button" className="btn btn-outline" onClick={() => setShowResolveModal(false)}>Cancel</button>
+                  <button type="submit" className="btn btn-success">Submit for Verification</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
