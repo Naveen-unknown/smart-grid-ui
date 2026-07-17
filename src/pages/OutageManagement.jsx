@@ -79,7 +79,6 @@ export default function OutageManagement() {
       <div className="page-header">
         <div><h2>Outage Management</h2><p>Monitor and resolve power outages in real-time</p></div>
         <div className="header-right">
-          <button className="btn btn-danger" onClick={() => setShowModal(true)}>🚨 Report Outage</button>
         </div>
       </div>
 

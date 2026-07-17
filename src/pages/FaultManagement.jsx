@@ -79,7 +79,6 @@ export default function FaultManagement() {
       <div className="page-header">
         <div><h2>Fault Management</h2><p>Track and resolve grid faults with AI assistance</p></div>
         <div className="header-right">
-          <button className="btn btn-primary" onClick={() => setShowModal(true)}>🔧 Report Fault</button>
         </div>
       </div>
 
