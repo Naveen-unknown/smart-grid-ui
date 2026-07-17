@@ -54,9 +54,7 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <img src="/logo.jpg" alt="Logo" style={{ width: '42px', height: '42px', borderRadius: '12px', marginBottom: '10px', objectFit: 'cover', boxShadow: '0 0 20px rgba(59,130,246,0.3)' }} />
-        <h1>Smart Grid</h1>
-        <span>Monitoring System</span>
+        <img src="/logo.png" alt="Smart Grid Monitoring System" className="brand-logo-img" />
       </div>
 
       <nav className="sidebar-nav">

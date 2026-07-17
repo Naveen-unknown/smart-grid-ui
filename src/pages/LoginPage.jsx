@@ -62,23 +62,8 @@ export default function LoginPage() {
         <div className="auth-brand-panel">
           <div className="auth-brand-inner">
             {/* Logo */}
-            <div className="auth-logo">
-              <div className="auth-logo-icon">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                  <polygon points="18,2 6,18 15,18 14,30 26,14 17,14" fill="#3b82f6" />
-                  <polygon points="18,2 6,18 15,18 14,30 26,14 17,14" fill="url(#bolt-grad)" />
-                  <defs>
-                    <linearGradient id="bolt-grad" x1="0" y1="0" x2="1" y2="1">
-                      <stop offset="0%" stopColor="#60a5fa" />
-                      <stop offset="100%" stopColor="#3b82f6" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-              <div>
-                <div className="auth-logo-name">SmartGrid</div>
-                <div className="auth-logo-sub">Grid Intelligence Platform</div>
-              </div>
+            <div className="auth-logo" style={{ marginBottom: '2rem' }}>
+              <img src="/logo.png" alt="Smart Grid Monitoring System" style={{ width: '100%', maxWidth: '350px', objectFit: 'contain', borderRadius: '16px', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)' }} />
             </div>
 
             {/* Headline */}
