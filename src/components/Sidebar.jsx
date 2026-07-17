@@ -53,8 +53,10 @@ export default function Sidebar({ theme, toggleTheme }) {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo">
-        <img src="/logo.jpg" alt="Smart Grid Monitoring System" className="brand-logo-img" />
+      <div className="sidebar-logo" style={{ padding: '24px 20px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px' }}>
+        <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 'bold', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <i className="bi bi-lightning-charge-fill" style={{ color: 'var(--accent-blue)' }}></i> Smart Grid
+        </h2>
       </div>
 
       <nav className="sidebar-nav">
