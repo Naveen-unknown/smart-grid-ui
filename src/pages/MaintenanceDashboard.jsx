@@ -34,9 +34,9 @@ export default function MaintenanceDashboard() {
       setLoading(true);
       // Fallback dummy data if API is not ready
       const dummyTickets = [
-        { ticketId: 'SG-2026-1024', teamName: 'John Doe (Lead Engineer)', status: 'Assigned', faultDescription: 'Transformer Overheating' },
-        { ticketId: 'SG-2026-1023', teamName: 'Sarah Smith (Field Technician)', status: 'En Route', faultDescription: 'Voltage Sag' },
-        { ticketId: 'SG-2026-1022', teamName: 'Mike Johnson (Lineman)', status: 'Completed', faultDescription: 'Capacitor Issue' }
+        { ticketId: 'SG-2026-1024', teamName: 'Pending Acceptance', status: 'Assigned', faultDescription: 'Transformer Overheating' },
+        { ticketId: 'SG-2026-1023', teamName: 'Sarah Smith (Dispatched)', status: 'En Route', faultDescription: 'Voltage Sag' },
+        { ticketId: 'SG-2026-1022', teamName: 'Mike Johnson (Dispatched)', status: 'Completed', faultDescription: 'Capacitor Issue' }
       ];
       setTickets(dummyTickets);
       
@@ -44,9 +44,7 @@ export default function MaintenanceDashboard() {
       if (response.data && response.data.length > 0) {
         setTickets(response.data.map(t => ({
           ticketId: `SG-${new Date().getFullYear()}-${t.ticketId}`,
-          teamName: t.team?.members && t.team.members.length > 0 
-            ? `${t.team.members[0].name} (${t.team.members[0].role})` 
-            : (t.team?.teamName || 'Unknown Team'),
+          teamName: t.acceptedBy ? `${t.acceptedBy} (Dispatched)` : 'Pending Acceptance',
           status: t.status,
           faultDescription: t.fault?.description || 'Unknown Fault',
           proofPhotoUrl: t.proofPhotoUrl

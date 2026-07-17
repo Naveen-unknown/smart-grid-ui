@@ -42,17 +42,20 @@ export default function TeamAlerts() {
   };
 
   const handleAcceptJob = async (ticketId) => {
+    const engineerName = window.prompt("Enter your name to confirm dispatch:");
+    if (!engineerName) return;
+
     const rawTicketId = ticketId.toString().split('-').pop(); // Handle formatted IDs like SG-2026-1024
     
     // Optimistically update UI
-    setAlerts(prev => prev.map(a => a.ticketId === ticketId ? { ...a, status: 'En Route' } : a));
+    setAlerts(prev => prev.map(a => a.ticketId === ticketId ? { ...a, status: 'En Route', acceptedBy: engineerName } : a));
     
     try {
-      await axios.post(`/Maintenance/ticket/${rawTicketId}/status`, { Status: 'En Route' });
-      toast.success('Job Accepted! Status updated to En Route.');
+      await axios.post(`/Maintenance/ticket/${rawTicketId}/status`, { Status: 'En Route', AcceptedBy: engineerName });
+      toast.success(`Job Accepted by ${engineerName}! Status updated to En Route.`);
     } catch (err) {
       if (err.response?.status === 404 || err.response?.status === 400) {
-        toast.success('Job Accepted! (Simulated Mode)');
+        toast.success(`Job Accepted by ${engineerName}! (Simulated Mode)`);
       } else {
         toast.error('Failed to update job status on server.');
         console.error(err);
