@@ -13,6 +13,9 @@ export default function TeamAlerts() {
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileForm, setProfileForm] = useState({ name: '', role: 'Field Technician', phoneNumber: '', teamId: 1 });
   
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [registerForm, setRegisterForm] = useState({ username: '', password: '', name: '', role: 'Field Technician', phoneNumber: '', teamId: 1 });
+  
   const [showResolveModal, setShowResolveModal] = useState(false);
   const [activeTicket, setActiveTicket] = useState(null);
   const [proofPhoto, setProofPhoto] = useState(null);
@@ -47,6 +50,19 @@ export default function TeamAlerts() {
     } catch (err) {
       console.error("Profile save error:", err.response?.data || err.message);
       toast.error('Failed to setup profile: ' + (err.response?.data?.message || err.response?.data || 'Unknown error'));
+    }
+  };
+
+  const handleRegisterMember = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('/Maintenance/register-member', registerForm);
+      setShowRegisterModal(false);
+      setRegisterForm({ username: '', password: '', name: '', role: 'Field Technician', phoneNumber: '', teamId: 1 });
+      toast.success('Member registered successfully! They can now log in securely.');
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || 'Registration failed.');
     }
   };
 
@@ -155,6 +171,9 @@ export default function TeamAlerts() {
           <p style={{ color: 'var(--text-secondary)' }}>Live fault & outage dispatch assignments</p>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <button onClick={() => setShowRegisterModal(true)} className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <i className="bi bi-person-plus-fill"></i> Add Member
+          </button>
           <button onClick={handleSimulateAlert} className="btn btn-warning" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <i className="bi bi-lightning-charge-fill"></i> Simulate Alert
           </button>
@@ -170,97 +189,140 @@ export default function TeamAlerts() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        {alerts.map((alert, idx) => (
-          <div key={idx} style={{ 
-            background: alert.status === 'Assigned' ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(220, 38, 38, 0.02))' : 'var(--bg-card)',
-            border: `1px solid ${alert.status === 'Assigned' ? 'var(--accent-red)' : 'var(--border-color)'}`,
-            borderRadius: '16px',
-            padding: '24px',
-            boxShadow: alert.status === 'Assigned' ? '0 8px 32px rgba(239, 68, 68, 0.1)' : 'var(--shadow-md)',
-            position: 'relative',
-            overflow: 'hidden'
-          }}>
-            {alert.status === 'Assigned' && (
-              <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--accent-red)' }}></div>
-            )}
-            
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                {alert.status === 'Assigned' && <div className="live-dot" style={{ background: 'var(--accent-red)' }}></div>}
-                <h2 style={{ margin: 0, color: alert.status === 'Assigned' ? 'var(--accent-red)' : 'var(--accent-blue)', fontSize: '20px', fontWeight: 'bold' }}>
-                  {alert.status === 'Assigned' ? 'NEW DISPATCH' : 'IN PROGRESS'}
-                </h2>
-              </div>
-              <span className={`badge ${alert.status === 'Assigned' ? 'badge-yellow' : 'badge-blue'}`} style={{ fontSize: '14px', padding: '6px 12px' }}>
-                {alert.status}
-              </span>
-            </div>
-
-            <div className="grid-2" style={{ background: 'var(--bg-input)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '20px' }}>
-              <div>
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Fault Type</div>
-                <div style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)' }}>{alert.faultDescription || alert.fault?.description}</div>
-              </div>
-
-              <div>
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Location</div>
-                <div style={{ fontSize: '16px', color: 'var(--text-secondary)' }}>{alert.location || alert.fault?.node?.location || 'Assigned Zone'}</div>
-              </div>
-
-              <div>
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Severity</div>
-                <div style={{ fontSize: '16px', color: 'var(--accent-red)', fontWeight: 'bold' }}>{alert.severity || alert.fault?.severity || 'High'}</div>
-              </div>
-              
-              <div>
-                <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Ticket ID</div>
-                <div style={{ fontSize: '14px', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>{alert.ticketId}</div>
-              </div>
-              
-              {alert.acceptedBy && (
-                <div>
-                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Accepted By</div>
-                  <div style={{ fontSize: '14px', color: 'var(--accent-blue)', fontWeight: 'bold' }}>{alert.acceptedBy}</div>
+      {alerts.filter(a => a.status === 'Assigned').length > 0 && (
+        <div style={{ marginBottom: '40px' }}>
+          <h2 style={{ fontSize: '20px', color: 'var(--text-primary)', marginBottom: '16px', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
+            <i className="bi bi-exclamation-triangle" style={{ color: 'var(--accent-red)', marginRight: '8px' }}></i> New Dispatches
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {alerts.filter(a => a.status === 'Assigned').map((alert, idx) => (
+              <div key={idx} style={{ 
+                background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.05), rgba(220, 38, 38, 0.02))',
+                border: '1px solid var(--accent-red)',
+                borderRadius: '16px',
+                padding: '24px',
+                boxShadow: '0 8px 32px rgba(239, 68, 68, 0.1)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--accent-red)' }}></div>
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div className="live-dot" style={{ background: 'var(--accent-red)' }}></div>
+                    <h2 style={{ margin: 0, color: 'var(--accent-red)', fontSize: '20px', fontWeight: 'bold' }}>NEW DISPATCH</h2>
+                  </div>
+                  <span className="badge badge-yellow" style={{ fontSize: '14px', padding: '6px 12px' }}>{alert.status}</span>
                 </div>
-              )}
-            </div>
 
-            <div style={{ display: 'flex', gap: '12px' }}>
-              {alert.status === 'Assigned' && (
-                <button 
-                  className="btn btn-success btn-lg" 
-                  style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '8px' }}
-                  onClick={() => handleAcceptJob(alert.ticketId)}
-                >
-                  <i className="bi bi-check-circle-fill"></i> Accept Job
-                </button>
-              )}
+                <div className="grid-2" style={{ background: 'var(--bg-input)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '20px' }}>
+                  <div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Fault Type</div>
+                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)' }}>{alert.faultDescription || alert.fault?.description}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Location</div>
+                    <div style={{ fontSize: '16px', color: 'var(--text-secondary)' }}>{alert.location || alert.fault?.node?.location || 'Assigned Zone'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Severity</div>
+                    <div style={{ fontSize: '16px', color: 'var(--accent-red)', fontWeight: 'bold' }}>{alert.severity || alert.fault?.severity || 'High'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Ticket ID</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>{alert.ticketId}</div>
+                  </div>
+                </div>
 
-              {alert.status === 'En Route' && (
-                <button 
-                  className="btn btn-warning btn-lg" 
-                  style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '8px' }}
-                  onClick={() => {
-                    setActiveTicket(alert);
-                    setShowResolveModal(true);
-                  }}
-                >
-                  <i className="bi bi-camera-fill"></i> Resolve & Upload Proof
-                </button>
-              )}
-              
-              <button 
-                className={alert.status === 'Assigned' ? "btn btn-outline btn-lg" : "btn btn-primary btn-lg"} 
-                style={{ flex: alert.status === 'Assigned' ? 'none' : 1, display: 'flex', justifyContent: 'center', gap: '8px', padding: alert.status === 'Assigned' ? '0 24px' : 'auto' }}
-                onClick={() => openMap(alert)}
-              >
-                <i className="bi bi-geo-alt-fill"></i> View Map
-              </button>
-            </div>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button 
+                    className="btn btn-success btn-lg" 
+                    style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '8px' }}
+                    onClick={() => handleAcceptJob(alert.ticketId)}
+                  >
+                    <i className="bi bi-check-circle-fill"></i> Accept Job
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
+
+      {alerts.filter(a => a.status !== 'Assigned').length > 0 && (
+        <div>
+          <h2 style={{ fontSize: '20px', color: 'var(--text-primary)', marginBottom: '16px', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
+            <i className="bi bi-tools" style={{ color: 'var(--accent-blue)', marginRight: '8px' }}></i> My Active Jobs
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {alerts.filter(a => a.status !== 'Assigned').map((alert, idx) => (
+              <div key={idx} style={{ 
+                background: 'var(--bg-card)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '16px',
+                padding: '24px',
+                boxShadow: 'var(--shadow-md)',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <h2 style={{ margin: 0, color: 'var(--accent-blue)', fontSize: '20px', fontWeight: 'bold' }}>IN PROGRESS</h2>
+                  </div>
+                  <span className="badge badge-blue" style={{ fontSize: '14px', padding: '6px 12px' }}>{alert.status}</span>
+                </div>
+
+                <div className="grid-2" style={{ background: 'var(--bg-input)', padding: '20px', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '20px' }}>
+                  <div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Fault Type</div>
+                    <div style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--text-primary)' }}>{alert.faultDescription || alert.fault?.description}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Location</div>
+                    <div style={{ fontSize: '16px', color: 'var(--text-secondary)' }}>{alert.location || alert.fault?.node?.location || 'Assigned Zone'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Severity</div>
+                    <div style={{ fontSize: '16px', color: 'var(--accent-red)', fontWeight: 'bold' }}>{alert.severity || alert.fault?.severity || 'High'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Ticket ID</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>{alert.ticketId}</div>
+                  </div>
+                  {alert.acceptedBy && (
+                    <div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Accepted By</div>
+                      <div style={{ fontSize: '14px', color: 'var(--accent-blue)', fontWeight: 'bold' }}>{alert.acceptedBy}</div>
+                    </div>
+                  )}
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  {alert.status === 'En Route' && (
+                    <button 
+                      className="btn btn-warning btn-lg" 
+                      style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '8px' }}
+                      onClick={() => {
+                        setActiveTicket(alert);
+                        setShowResolveModal(true);
+                      }}
+                    >
+                      <i className="bi bi-camera-fill"></i> Resolve & Upload Proof
+                    </button>
+                  )}
+                  <button 
+                    className="btn btn-primary btn-lg" 
+                    style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '8px' }}
+                    onClick={() => openMap(alert)}
+                  >
+                    <i className="bi bi-geo-alt-fill"></i> View Map
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {showMap && activeMapAlert && (
         <div className="modal-overlay" onClick={() => setShowMap(false)}>
@@ -312,6 +374,48 @@ export default function TeamAlerts() {
                   </select>
                 </div>
                 <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Save Profile</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showRegisterModal && (
+        <div className="modal-overlay">
+          <div className="modal" style={{ maxWidth: '400px' }}>
+            <div className="modal-header">
+              <h2 className="modal-title">Register Member</h2>
+              <button className="close-btn" onClick={() => setShowRegisterModal(false)}><i className="bi bi-x-lg"></i></button>
+            </div>
+            <div className="modal-body">
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>Create a secure login for a new team member.</p>
+              <form onSubmit={handleRegisterMember}>
+                <div className="form-group" style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Username</label>
+                  <input type="text" className="form-control" required value={registerForm.username} onChange={e => setRegisterForm({...registerForm, username: e.target.value})} placeholder="e.g. jdoe123" />
+                </div>
+                <div className="form-group" style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Password</label>
+                  <input type="password" className="form-control" required value={registerForm.password} onChange={e => setRegisterForm({...registerForm, password: e.target.value})} placeholder="Secure password" />
+                </div>
+                <div className="form-group" style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Full Name</label>
+                  <input type="text" className="form-control" required value={registerForm.name} onChange={e => setRegisterForm({...registerForm, name: e.target.value})} placeholder="e.g. John Doe" />
+                </div>
+                <div className="form-group" style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Phone Number</label>
+                  <input type="text" className="form-control" required value={registerForm.phoneNumber} onChange={e => setRegisterForm({...registerForm, phoneNumber: e.target.value})} placeholder="+1 234 567 890" />
+                </div>
+                <div className="form-group" style={{ marginBottom: '24px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Role</label>
+                  <select className="form-control" value={registerForm.role} onChange={e => setRegisterForm({...registerForm, role: e.target.value})}>
+                    <option>Field Technician</option>
+                    <option>Senior Engineer</option>
+                    <option>Lineman</option>
+                    <option>Dispatcher</option>
+                  </select>
+                </div>
+                <button type="submit" className="btn btn-success" style={{ width: '100%' }}>Register Secure Member</button>
               </form>
             </div>
           </div>
