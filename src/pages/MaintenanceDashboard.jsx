@@ -44,7 +44,9 @@ export default function MaintenanceDashboard() {
       if (response.data && response.data.length > 0) {
         setTickets(response.data.map(t => ({
           ticketId: `SG-${new Date().getFullYear()}-${t.ticketId}`,
-          teamName: t.team?.teamName || 'Unknown Team',
+          teamName: t.team?.members && t.team.members.length > 0 
+            ? `${t.team.members[0].name} (${t.team.members[0].role})` 
+            : (t.team?.teamName || 'Unknown Team'),
           status: t.status,
           faultDescription: t.fault?.description || 'Unknown Fault',
           proofPhotoUrl: t.proofPhotoUrl
@@ -284,29 +286,24 @@ export default function MaintenanceDashboard() {
               <div>
                 <h3 style={{ marginBottom: '16px', fontSize: '18px', color: 'var(--text-primary)' }}>Current Members</h3>
                 <div style={{ maxHeight: '350px', overflowY: 'auto', paddingRight: '8px' }}>
-                  {teams.map(team => (
-                    <div key={team.id || team.teamId} style={{ marginBottom: '16px', background: 'var(--bg-input)', padding: '12px', borderRadius: '8px' }}>
-                      <h4 style={{ color: 'var(--accent-blue)', marginBottom: '8px', fontSize: '15px' }}>{team.teamName}</h4>
-                      {team.members && team.members.length > 0 ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          {team.members.map(m => (
-                            <div key={m.memberId || m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card)', padding: '10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                              <div>
-                                <div style={{ fontWeight: 'bold', fontSize: '14px', color: 'var(--text-primary)' }}>{m.name} <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>({m.role})</span></div>
-                                <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>{m.phoneNumber}</div>
-                              </div>
-                              <div style={{ display: 'flex', gap: '8px' }}>
-                                <button type="button" className="btn btn-outline btn-sm" style={{ padding: '4px 10px', fontSize: '12px' }} onClick={() => setSmsModal({ show: true, memberId: m.memberId || m.id, memberName: m.name, message: '' })}>SMS</button>
-                                <button type="button" className="btn btn-danger btn-sm" style={{ padding: '4px 10px', fontSize: '12px' }} onClick={() => handleDeleteMember(m.memberId || m.id)}>Del</button>
-                              </div>
-                            </div>
-                          ))}
+                  {teams.flatMap(t => t.members || []).length > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {teams.flatMap(t => t.members || []).map(m => (
+                        <div key={m.memberId || m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-card)', padding: '10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <div>
+                            <div style={{ fontWeight: 'bold', fontSize: '14px', color: 'var(--text-primary)' }}>{m.name} <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>({m.role})</span></div>
+                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>{m.phoneNumber}</div>
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button type="button" className="btn btn-outline btn-sm" style={{ padding: '4px 10px', fontSize: '12px' }} onClick={() => setSmsModal({ show: true, memberId: m.memberId || m.id, memberName: m.name, message: '' })}>SMS</button>
+                            <button type="button" className="btn btn-danger btn-sm" style={{ padding: '4px 10px', fontSize: '12px' }} onClick={() => handleDeleteMember(m.memberId || m.id)}>Del</button>
+                          </div>
                         </div>
-                      ) : (
-                        <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontStyle: 'italic' }}>No members found.</div>
-                      )}
+                      ))}
                     </div>
-                  ))}
+                  ) : (
+                    <div style={{ fontSize: '13px', color: 'var(--text-muted)', fontStyle: 'italic' }}>No members found.</div>
+                  )}
                 </div>
               </div>
 
