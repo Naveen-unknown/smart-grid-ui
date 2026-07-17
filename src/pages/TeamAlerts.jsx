@@ -189,11 +189,16 @@ export default function TeamAlerts() {
         </div>
       </div>
 
-      {alerts.filter(a => a.status === 'Assigned').length > 0 && (
-        <div style={{ marginBottom: '40px' }}>
-          <h2 style={{ fontSize: '20px', color: 'var(--text-primary)', marginBottom: '16px', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
-            <i className="bi bi-exclamation-triangle" style={{ color: 'var(--accent-red)', marginRight: '8px' }}></i> New Dispatches
-          </h2>
+      <div style={{ marginBottom: '40px' }}>
+        <h2 style={{ fontSize: '20px', color: 'var(--text-primary)', marginBottom: '16px', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
+          <i className="bi bi-exclamation-triangle" style={{ color: 'var(--accent-red)', marginRight: '8px' }}></i> New Dispatches
+        </h2>
+        
+        {alerts.filter(a => a.status === 'Assigned').length === 0 ? (
+          <div style={{ padding: '24px', background: 'var(--bg-card)', borderRadius: '16px', border: '1px dashed var(--border-color)', textAlign: 'center', color: 'var(--text-muted)' }}>
+            <p style={{ margin: 0 }}>No new dispatch alerts at this time.</p>
+          </div>
+        ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {alerts.filter(a => a.status === 'Assigned').map((alert, idx) => (
               <div key={idx} style={{ 
@@ -246,8 +251,8 @@ export default function TeamAlerts() {
               </div>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {alerts.filter(a => a.status !== 'Assigned').length > 0 && (
         <div>
@@ -298,6 +303,14 @@ export default function TeamAlerts() {
                 </div>
 
                 <div style={{ display: 'flex', gap: '12px' }}>
+                  <button 
+                    className="btn btn-success btn-lg" 
+                    disabled
+                    style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '8px', opacity: 0.7 }}
+                  >
+                    <i className="bi bi-check-circle-fill"></i> Accepted
+                  </button>
+                  
                   {alert.status === 'En Route' && (
                     <button 
                       className="btn btn-warning btn-lg" 
