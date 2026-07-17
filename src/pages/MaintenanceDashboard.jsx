@@ -258,12 +258,7 @@ export default function MaintenanceDashboard() {
               <div style={{ paddingRight: '20px', borderRight: '1px solid var(--border-color)' }}>
                 <h3 style={{ marginBottom: '16px', fontSize: '18px', color: 'var(--text-primary)' }}>Add New Member</h3>
                 <form onSubmit={handleAddMember}>
-                  <div className="form-group">
-                    <label className="form-label">Select Team</label>
-                    <select className="form-control" value={newMember.teamId} onChange={(e) => setNewMember({...newMember, teamId: e.target.value})}>
-                      {teams.map(t => <option key={t.id || t.teamId} value={t.id || t.teamId}>{t.teamName}</option>)}
-                    </select>
-                  </div>
+
                   <div className="form-group">
                     <label className="form-label">Member Name</label>
                     <input type="text" required className="form-control" placeholder="e.g. John Doe" value={newMember.name} onChange={(e) => setNewMember({...newMember, name: e.target.value})} />
