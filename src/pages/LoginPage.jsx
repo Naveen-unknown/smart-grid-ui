@@ -63,7 +63,7 @@ export default function LoginPage() {
           <div className="auth-brand-inner">
             {/* Logo */}
             <div className="auth-logo" style={{ marginBottom: '2rem' }}>
-              <img src="/logo.png" alt="Smart Grid Monitoring System" style={{ width: '100%', maxWidth: '350px', objectFit: 'contain', borderRadius: '16px', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)' }} />
+              <img src="/logo.jpg" alt="Smart Grid Monitoring System" style={{ width: '100%', maxWidth: '350px', objectFit: 'contain', borderRadius: '16px', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)' }} />
             </div>
 
             {/* Headline */}

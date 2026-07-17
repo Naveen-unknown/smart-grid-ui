@@ -54,7 +54,7 @@ export default function Sidebar({ theme, toggleTheme }) {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <img src="/logo.png" alt="Smart Grid Monitoring System" className="brand-logo-img" />
+        <img src="/logo.jpg" alt="Smart Grid Monitoring System" className="brand-logo-img" />
       </div>
 
       <nav className="sidebar-nav">
