@@ -16,6 +16,8 @@ export default function TeamAlerts() {
   const [showResolveModal, setShowResolveModal] = useState(false);
   const [activeTicket, setActiveTicket] = useState(null);
   const [proofPhoto, setProofPhoto] = useState(null);
+  
+  const previousTicketIds = React.useRef(new Set());
 
   useEffect(() => {
     fetchTeamAlerts();
@@ -83,6 +85,20 @@ export default function TeamAlerts() {
       // Assume the Maintenance Team is "Team A" (TeamId = 1)
       const myTickets = response.data.filter(t => t.teamId === 1 && t.status !== 'Completed');
       if (myTickets.length > 0) {
+        // Check for newly assigned tickets to show a popup notification
+        const currentIds = new Set(myTickets.map(t => t.ticketId));
+        if (previousTicketIds.current.size > 0) {
+          const newTickets = myTickets.filter(t => !previousTicketIds.current.has(t.ticketId) && t.status === 'Assigned');
+          if (newTickets.length > 0) {
+            toast('🚨 NEW FAULT ALERT DISPATCHED!', { 
+              duration: 6000, 
+              icon: '⚠️',
+              style: { background: '#ef4444', color: '#fff', fontWeight: 'bold', fontSize: '16px' } 
+            });
+          }
+        }
+        previousTicketIds.current = currentIds;
+        
         setAlerts(myTickets);
       } else {
         // Dummy data if empty
