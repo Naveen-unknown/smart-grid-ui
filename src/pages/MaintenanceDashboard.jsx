@@ -16,6 +16,8 @@ export default function MaintenanceDashboard() {
   useEffect(() => {
     fetchTickets();
     fetchTeams();
+    const interval = setInterval(fetchTickets, 10000);
+    return () => clearInterval(interval);
   }, []);
 
   const fetchTeams = async () => {

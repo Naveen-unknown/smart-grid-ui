@@ -5,7 +5,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recha
 import toast from 'react-hot-toast';
 
 const SEVERITY_COLORS = { Low: '#10b981', Medium: '#f59e0b', High: '#f97316', Critical: '#ef4444' };
-const STATUS_BADGE = { Reported: 'badge-red', InProgress: 'badge-yellow', Resolved: 'badge-green', Closed: 'badge-gray' };
+const STATUS_BADGE = { Reported: 'badge-red', InProgress: 'badge-yellow', 'Pending Verification': 'badge-orange', Resolved: 'badge-green', Closed: 'badge-gray' };
 
 export default function FaultManagement() {
   const { user } = useAuth();
@@ -24,7 +24,11 @@ export default function FaultManagement() {
     faultType: '', description: '', severity: 'Medium', assignedTo: ''
   });
 
-  useEffect(() => { loadData(); }, [filters]);
+  useEffect(() => { 
+    loadData(); 
+    const interval = setInterval(loadData, 10000);
+    return () => clearInterval(interval);
+  }, [filters]);
 
   const loadData = async () => {
     setLoading(true);
@@ -175,6 +179,7 @@ export default function FaultManagement() {
                 <option value="">All Status</option>
                 <option value="Reported">Reported</option>
                 <option value="InProgress">In Progress</option>
+                <option value="Pending Verification">Pending Verification</option>
                 <option value="Resolved">Resolved</option>
                 <option value="Closed">Closed</option>
               </select>
