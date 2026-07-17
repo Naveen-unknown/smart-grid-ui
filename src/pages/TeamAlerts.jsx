@@ -171,17 +171,8 @@ export default function TeamAlerts() {
           <p style={{ color: 'var(--text-secondary)' }}>Live fault & outage dispatch assignments</p>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <button onClick={() => setShowRegisterModal(true)} className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <i className="bi bi-person-plus-fill"></i> Add Member
-          </button>
           <button onClick={handleSimulateAlert} className="btn btn-warning" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <i className="bi bi-lightning-charge-fill"></i> Simulate Alert
-          </button>
-          <button onClick={() => {
-            if (profile) setProfileForm({ name: profile.name, role: profile.role, phoneNumber: profile.phoneNumber, teamId: profile.teamId });
-            setShowProfileModal(true);
-          }} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <i className="bi bi-person-circle"></i> My Profile
           </button>
           <button onClick={logout} className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <i className="bi bi-box-arrow-right"></i> Logout
