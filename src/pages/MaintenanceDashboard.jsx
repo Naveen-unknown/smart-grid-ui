@@ -221,21 +221,9 @@ export default function MaintenanceDashboard() {
                       <td>
                         {['Assigned', 'En Route', 'Repairing'].includes(ticket.status) && (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Upload Photo Proof to Complete</span>
-                            <label className="btn btn-outline btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', justifyContent: 'center' }}>
-                              <i className="bi bi-upload"></i> Choose Photo
-                              <input 
-                                type="file" 
-                                accept="image/*" 
-                                onChange={(e) => {
-                                  if (e.target.files && e.target.files[0]) {
-                                    handleUploadProof(ticket.ticketId, e.target.files[0]);
-                                    e.target.value = null; // Reset the input so the same file can be uploaded again if needed
-                                  }
-                                }} 
-                                style={{ display: 'none' }}
-                              />
-                            </label>
+                            <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+                              Awaiting maintenance team to upload proof...
+                            </span>
                           </div>
                         )}
                         {ticket.status === 'Pending Verification' && ticket.proofPhotoUrl && (
