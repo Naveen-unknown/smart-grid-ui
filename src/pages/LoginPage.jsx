@@ -5,14 +5,22 @@ import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 export default function LoginPage() {
-  const [tab, setTab] = useState('login');
+  const [tab, setTab] = useState('login'); // 'login' or 'register'
+  const [loginType, setLoginType] = useState('officer'); // 'officer' or 'maintenance'
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // Standard Login (Officer/Admin)
   const [loginForm, setLoginForm] = useState({ usernameOrEmail: '', password: '' });
-  const [regForm, setRegForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
   const [showLoginPwd, setShowLoginPwd] = useState(false);
+
+  // OTP Login (Maintenance)
+  const [otpStep, setOtpStep] = useState(1); // 1 = request otp, 2 = verify otp
+  const [otpForm, setOtpForm] = useState({ credentialId: '', phoneNumber: '', otp: '' });
+
+  // Register Form
+  const [regForm, setRegForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
   const [showRegPwd, setShowRegPwd] = useState(false);
   const [showConfirmPwd, setShowConfirmPwd] = useState(false);
 
@@ -28,6 +36,32 @@ export default function LoginPage() {
       else navigate('/');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Invalid credentials');
+    } finally { setLoading(false); }
+  };
+
+  const handleRequestOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await authAPI.requestOtp({ credentialId: otpForm.credentialId, phoneNumber: otpForm.phoneNumber });
+      toast.success('OTP sent to your mobile number!');
+      setOtpStep(2);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to send OTP');
+    } finally { setLoading(false); }
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await authAPI.verifyOtp({ credentialId: otpForm.credentialId, otp: otpForm.otp });
+      const { data } = res.data;
+      login({ id: data.id, username: data.username, email: data.email, role: data.role }, data.token);
+      toast.success(`Welcome back, ${data.username}! ⚡`);
+      navigate('/team-alerts');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Invalid OTP');
     } finally { setLoading(false); }
   };
 
@@ -131,7 +165,6 @@ export default function LoginPage() {
             
             <div style={{ marginTop: '20px', fontSize: '12px', color: '#94a3b8' }}>
               <p style={{ margin: '0' }}><strong>Electricity Officer:</strong> electricity_officer / Admin@123</p>
-              <p style={{ margin: '0' }}><strong>Maintenance Team:</strong> maintenance_team / Admin@123</p>
             </div>
           </div>
         </div>
@@ -159,70 +192,175 @@ export default function LoginPage() {
               <div className="auth-form-content">
                 <div className="auth-form-header">
                   <h2>Welcome back</h2>
-                  <p>Enter your credentials to access the grid dashboard</p>
+                  <p>Select your role to access the platform</p>
                 </div>
 
-                {/* Demo credentials quick fill */}
-                <button
-                  type="button"
-                  className="auth-demo-btn"
-                  onClick={() => {
-                    setLoginForm({ usernameOrEmail: 'admin@smartgrid.com', password: 'Admin@123' });
-                    toast.success('Demo credentials filled!');
-                  }}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                  Use Demo Admin Credentials
-                </button>
-
-                <form onSubmit={handleLogin}>
-                  <div className="auth-field">
-                    <label className="auth-label">Email or Username</label>
-                    <div className="auth-input-wrap">
-                      <span className="auth-input-icon">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                      </span>
-                      <input
-                        type="text"
-                        className="auth-input"
-                        placeholder="admin@smartgrid.com"
-                        value={loginForm.usernameOrEmail}
-                        onChange={e => setLoginForm({ ...loginForm, usernameOrEmail: e.target.value })}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="auth-field">
-                    <label className="auth-label">Password</label>
-                    <div className="auth-input-wrap">
-                      <span className="auth-input-icon">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                      </span>
-                      <input
-                        type={showLoginPwd ? 'text' : 'password'}
-                        className="auth-input"
-                        placeholder="••••••••"
-                        value={loginForm.password}
-                        onChange={e => setLoginForm({ ...loginForm, password: e.target.value })}
-                        required
-                      />
-                      <button type="button" className="auth-pwd-toggle" onClick={() => setShowLoginPwd(v => !v)}>
-                        {showLoginPwd ? '🙈' : '👁️'}
-                      </button>
-                    </div>
-                  </div>
-
-                  <button type="submit" className="auth-submit-btn" disabled={loading}>
-                    {loading ? (
-                      <><span className="auth-spinner" /> Signing in...</>
-                    ) : (
-                      <><span>⚡</span> Sign In</>
-                    )}
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                  <button 
+                    type="button" 
+                    className={`btn ${loginType === 'officer' ? 'btn-primary' : 'btn-outline'}`}
+                    style={{ flex: 1, padding: '8px', fontSize: '14px' }}
+                    onClick={() => setLoginType('officer')}
+                  >
+                    <i className="bi bi-person-badge"></i> Officer Login
                   </button>
-                </form>
+                  <button 
+                    type="button" 
+                    className={`btn ${loginType === 'maintenance' ? 'btn-primary' : 'btn-outline'}`}
+                    style={{ flex: 1, padding: '8px', fontSize: '14px' }}
+                    onClick={() => setLoginType('maintenance')}
+                  >
+                    <i className="bi bi-tools"></i> Maintenance Login
+                  </button>
+                </div>
 
-                <div className="auth-switch-text">
+                {loginType === 'officer' && (
+                  <>
+                    <button
+                      type="button"
+                      className="auth-demo-btn"
+                      onClick={() => {
+                        setLoginForm({ usernameOrEmail: 'electricity_officer', password: 'Admin@123' });
+                        toast.success('Officer credentials filled!');
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                      Use Demo Officer Credentials
+                    </button>
+                    <form onSubmit={handleLogin}>
+                      <div className="auth-field">
+                        <label className="auth-label">Email or Username</label>
+                        <div className="auth-input-wrap">
+                          <span className="auth-input-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                          </span>
+                          <input
+                            type="text"
+                            className="auth-input"
+                            placeholder="electricity_officer"
+                            value={loginForm.usernameOrEmail}
+                            onChange={e => setLoginForm({ ...loginForm, usernameOrEmail: e.target.value })}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="auth-field">
+                        <label className="auth-label">Password</label>
+                        <div className="auth-input-wrap">
+                          <span className="auth-input-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                          </span>
+                          <input
+                            type={showLoginPwd ? 'text' : 'password'}
+                            className="auth-input"
+                            placeholder="••••••••"
+                            value={loginForm.password}
+                            onChange={e => setLoginForm({ ...loginForm, password: e.target.value })}
+                            required
+                          />
+                          <button type="button" className="auth-pwd-toggle" onClick={() => setShowLoginPwd(v => !v)}>
+                            {showLoginPwd ? '🙈' : '👁️'}
+                          </button>
+                        </div>
+                      </div>
+
+                      <button type="submit" className="auth-submit-btn" disabled={loading}>
+                        {loading ? (
+                          <><span className="auth-spinner" /> Signing in...</>
+                        ) : (
+                          <><span>⚡</span> Sign In</>
+                        )}
+                      </button>
+                    </form>
+                  </>
+                )}
+
+                {loginType === 'maintenance' && (
+                  <>
+                    {otpStep === 1 ? (
+                      <form onSubmit={handleRequestOtp}>
+                        <div className="auth-field">
+                          <label className="auth-label">Credential ID</label>
+                          <div className="auth-input-wrap">
+                            <span className="auth-input-icon">
+                              <i className="bi bi-hash"></i>
+                            </span>
+                            <input
+                              type="text"
+                              className="auth-input"
+                              placeholder="e.g. MTM-1"
+                              value={otpForm.credentialId}
+                              onChange={e => setOtpForm({ ...otpForm, credentialId: e.target.value })}
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div className="auth-field">
+                          <label className="auth-label">Phone Number</label>
+                          <div className="auth-input-wrap">
+                            <span className="auth-input-icon">
+                              <i className="bi bi-telephone"></i>
+                            </span>
+                            <input
+                              type="text"
+                              className="auth-input"
+                              placeholder="e.g. +919344255537"
+                              value={otpForm.phoneNumber}
+                              onChange={e => setOtpForm({ ...otpForm, phoneNumber: e.target.value })}
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <button type="submit" className="auth-submit-btn" disabled={loading}>
+                          {loading ? (
+                            <><span className="auth-spinner" /> Sending OTP...</>
+                          ) : (
+                            <><span>💬</span> Send OTP via SMS</>
+                          )}
+                        </button>
+                      </form>
+                    ) : (
+                      <form onSubmit={handleVerifyOtp}>
+                        <div className="auth-field">
+                          <label className="auth-label">Enter 6-Digit OTP</label>
+                          <div className="auth-input-wrap">
+                            <span className="auth-input-icon">
+                              <i className="bi bi-shield-lock"></i>
+                            </span>
+                            <input
+                              type="text"
+                              className="auth-input"
+                              placeholder="••••••"
+                              value={otpForm.otp}
+                              onChange={e => setOtpForm({ ...otpForm, otp: e.target.value })}
+                              required
+                              maxLength={6}
+                              style={{ letterSpacing: '4px', fontSize: '16px' }}
+                            />
+                          </div>
+                        </div>
+                        
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', fontSize: '13px' }}>
+                          <span style={{ color: 'var(--text-muted)' }}>Sent to {otpForm.phoneNumber}</span>
+                          <button type="button" onClick={() => setOtpStep(1)} style={{ background: 'none', border: 'none', color: 'var(--accent-blue)', cursor: 'pointer' }}>Change Number</button>
+                        </div>
+
+                        <button type="submit" className="auth-submit-btn" disabled={loading}>
+                          {loading ? (
+                            <><span className="auth-spinner" /> Verifying...</>
+                          ) : (
+                            <><span>✅</span> Verify & Login</>
+                          )}
+                        </button>
+                      </form>
+                    )}
+                  </>
+                )}
+
+                <div className="auth-switch-text" style={{ marginTop: '20px' }}>
                   Don't have an account?{' '}
                   <button className="auth-switch-link" onClick={() => setTab('register')}>
                     Create account

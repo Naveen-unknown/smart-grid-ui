@@ -3,6 +3,8 @@ import api from './axios';
 export const authAPI = {
   login: (data) => api.post('/auth/login', data),
   register: (data) => api.post('/auth/register', data),
+  requestOtp: (data) => api.post('/auth/request-otp', data),
+  verifyOtp: (data) => api.post('/auth/verify-otp', data),
   getProfile: () => api.get('/auth/profile'),
 };
 

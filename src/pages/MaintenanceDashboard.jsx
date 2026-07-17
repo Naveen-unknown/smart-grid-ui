@@ -293,7 +293,7 @@ export default function MaintenanceDashboard() {
                             <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '2px' }}>{m.phoneNumber}</div>
                           </div>
                           <div style={{ display: 'flex', gap: '8px' }}>
-                            <button type="button" className="btn btn-outline btn-sm" style={{ padding: '4px 10px', fontSize: '12px' }} onClick={() => setSmsModal({ show: true, memberId: m.memberId || m.id, memberName: m.name, message: '' })}>SMS</button>
+                            <button type="button" className="btn btn-outline btn-sm" style={{ padding: '4px 10px', fontSize: '12px' }} onClick={() => setSmsModal({ show: true, memberId: m.memberId || m.id, memberName: m.name, message: `Welcome to SmartGrid! Your Login Credential ID is: MTM-${m.memberId || m.id}` })}>SMS</button>
                             <button type="button" className="btn btn-danger btn-sm" style={{ padding: '4px 10px', fontSize: '12px' }} onClick={() => handleDeleteMember(m.memberId || m.id)}>Del</button>
                           </div>
                         </div>
