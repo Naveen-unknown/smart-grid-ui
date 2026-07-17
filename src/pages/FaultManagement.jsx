@@ -207,7 +207,7 @@ export default function FaultManagement() {
                 <thead>
                   <tr>
                     <th>#</th><th>Node</th><th>Type</th><th>Severity</th>
-                    <th>Status</th><th>Reported</th><th>AI Score</th><th>Actions</th>
+                    <th>Status</th><th>Reported</th><th>AI Score</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -224,13 +224,6 @@ export default function FaultManagement() {
                       <td><span className={`badge ${STATUS_BADGE[f.status] || 'badge-gray'}`}>{f.status}</span></td>
                       <td style={{ whiteSpace: 'nowrap', fontSize: '12px' }}>{new Date(f.reportedAt).toLocaleDateString()}</td>
                       <td>{f.confidenceScore ? `${(f.confidenceScore * 100).toFixed(0)}%` : '—'}</td>
-                      <td>
-                        {f.status !== 'Resolved' && f.status !== 'Closed' && (
-                          <button className="btn btn-outline btn-sm" onClick={() => { setShowStatusModal(f); setStatusUpdate({ status: '', notes: '' }); }}>
-                            Update
-                          </button>
-                        )}
-                      </td>
                     </tr>
                   ))}
                 </tbody>

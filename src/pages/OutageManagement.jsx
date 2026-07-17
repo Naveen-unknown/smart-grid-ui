@@ -199,9 +199,6 @@ export default function OutageManagement() {
                       </td>
                       <td style={{ display: 'flex', gap: '6px' }}>
                         <button className="btn btn-ghost btn-sm" onClick={() => setDetailModal(o)}>👁</button>
-                        {o.status === 'Ongoing' && (
-                          <button className="btn btn-success btn-sm" onClick={() => setRestoreModal(o)}>✓ Restore</button>
-                        )}
                       </td>
                     </tr>
                   ))}
@@ -271,32 +268,6 @@ export default function OutageManagement() {
         </div>
       )}
 
-      {/* Restore Modal */}
-      {restoreModal && (
-        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setRestoreModal(null)}>
-          <div className="modal">
-            <div className="modal-header">
-              <h3 className="modal-title">✅ Restore Outage #{restoreModal.id}</h3>
-              <button className="close-btn" onClick={() => setRestoreModal(null)}>✕</button>
-            </div>
-            <div className="modal-body">
-              <div style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '8px', padding: '12px', marginBottom: '16px' }}>
-                <strong style={{ color: 'var(--accent-green)' }}>Node:</strong> {restoreModal.nodeIdentifier}<br />
-                <strong style={{ color: 'var(--accent-green)' }}>Area:</strong> {restoreModal.affectedArea}
-              </div>
-              <div className="form-group">
-                <label className="form-label">Action Taken *</label>
-                <textarea className="form-control" placeholder="Describe what was done to restore power..."
-                  value={actionTaken} onChange={e => setActionTaken(e.target.value)} required />
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-outline" onClick={() => setRestoreModal(null)}>Cancel</button>
-              <button className="btn btn-success" onClick={handleRestore} disabled={!actionTaken}>✅ Mark as Restored</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Detail Modal */}
       {detailModal && (
