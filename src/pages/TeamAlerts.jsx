@@ -24,8 +24,9 @@ export default function TeamAlerts() {
   }, []);
 
   useEffect(() => {
-    if (user?.id) {
-      axios.get(`/Maintenance/profile/${user.id}`)
+    const currentUserId = user?.id || user?.Id;
+    if (currentUserId) {
+      axios.get(`/Maintenance/profile/${currentUserId}`)
         .then(res => setProfile(res.data))
         .catch(err => {
           if (err.response?.status === 404) setShowProfileModal(true);
@@ -36,12 +37,14 @@ export default function TeamAlerts() {
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/Maintenance/profile', { ...profileForm, userId: user.id });
+      const currentUserId = user?.id || user?.Id;
+      const res = await axios.post('/Maintenance/profile', { ...profileForm, userId: currentUserId });
       setProfile(res.data);
       setShowProfileModal(false);
       toast.success('Profile setup complete!');
     } catch (err) {
-      toast.error('Failed to setup profile.');
+      console.error("Profile save error:", err.response?.data || err.message);
+      toast.error('Failed to setup profile: ' + (err.response?.data?.message || err.response?.data || 'Unknown error'));
     }
   };
 
@@ -259,6 +262,7 @@ export default function TeamAlerts() {
                   <select className="form-control" value={profileForm.role} onChange={e => setProfileForm({...profileForm, role: e.target.value})}>
                     <option>Field Technician</option>
                     <option>Senior Engineer</option>
+                    <option>Lineman</option>
                     <option>Dispatcher</option>
                   </select>
                 </div>
