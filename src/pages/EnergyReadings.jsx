@@ -173,17 +173,17 @@ export default function EnergyReadings() {
                     <tr key={r.id}>
                       <td style={{ whiteSpace: 'nowrap' }}>{new Date(r.timestamp).toLocaleString()}</td>
                       <td><span style={{ color: 'var(--accent-blue)', fontWeight: 600 }}>{r.nodeName}</span></td>
-                      <td>{r.consumption} kWh</td>
-                      <td>{r.production} kWh</td>
+                      <td>{r.consumption?.toFixed(2)} kWh</td>
+                      <td>{r.production?.toFixed(2)} kWh</td>
                       <td>
                         <span style={{ color: r.voltage < 210 || r.voltage > 250 ? 'var(--accent-red)' : 'var(--accent-green)' }}>
-                          {r.voltage} V
+                          {r.voltage?.toFixed(1)} V
                         </span>
                       </td>
-                      <td>{r.current} A</td>
+                      <td>{r.current?.toFixed(1)} A</td>
                       <td>
                         <span style={{ color: r.powerFactor < 0.85 ? 'var(--accent-yellow)' : 'var(--text-primary)' }}>
-                          {r.powerFactor}
+                          {r.powerFactor?.toFixed(3)}
                         </span>
                       </td>
                       <td>{r.meterId || '—'}</td>
