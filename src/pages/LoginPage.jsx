@@ -129,7 +129,7 @@ export default function LoginPage() {
               </div>
             </div>
             
-            <div style={{ marginTop: '20px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+            <div style={{ marginTop: '20px', fontSize: '12px', color: '#94a3b8' }}>
               <p style={{ margin: '0' }}><strong>Electricity Officer:</strong> electricity_officer / Admin@123</p>
               <p style={{ margin: '0' }}><strong>Maintenance Team:</strong> maintenance_team / Admin@123</p>
             </div>
