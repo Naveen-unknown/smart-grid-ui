@@ -4,24 +4,24 @@ import { useAuth } from '../context/AuthContext';
 import { notificationsAPI } from '../api/services';
 import toast from 'react-hot-toast';
 
-export default function Sidebar() {
+export default function Sidebar({ theme, toggleTheme }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
 
   const navItems = user?.role === 'Maintenance Team' ? [
-    { to: '/', icon: '🔔', label: 'Team Alerts', end: true }
+    { to: '/', icon: <i className="bi bi-bell-fill"></i>, label: 'Team Alerts', end: true }
   ] : [
-    { to: '/', icon: '📊', label: 'Dashboard', end: true },
-    { to: '/energy', icon: '⚡', label: 'Energy Readings' },
-    { to: '/nodes', icon: '🔌', label: 'Grid Nodes' },
-    { to: '/faults', icon: '🔧', label: 'Fault Management' },
-    { to: '/outages', icon: '🚨', label: 'Outage Management' },
-    { to: '/maintenance', icon: '👷', label: 'Maintenance' },
-    { to: '/notifications', icon: '🔔', label: 'Alert Center' },
-    { to: '/ai-insights', icon: '🤖', label: 'AI Insights' },
-    { to: '/ai-chat', icon: '💬', label: 'AI Chat Assistant' },
-    { to: '/report', icon: '📋', label: 'Reports' },
+    { to: '/', icon: <i className="bi bi-grid-1x2-fill"></i>, label: 'Dashboard', end: true },
+    { to: '/energy', icon: <i className="bi bi-lightning-charge-fill"></i>, label: 'Energy Readings' },
+    { to: '/nodes', icon: <i className="bi bi-hdd-network-fill"></i>, label: 'Grid Nodes' },
+    { to: '/faults', icon: <i className="bi bi-wrench-adjustable"></i>, label: 'Fault Management' },
+    { to: '/outages', icon: <i className="bi bi-exclamation-octagon-fill"></i>, label: 'Outage Management' },
+    { to: '/maintenance', icon: <i className="bi bi-people-fill"></i>, label: 'Manage Teams' },
+    { to: '/notifications', icon: <i className="bi bi-bell-fill"></i>, label: 'Alert Center' },
+    { to: '/ai-insights', icon: <i className="bi bi-robot"></i>, label: 'AI Insights' },
+    { to: '/ai-chat', icon: <i className="bi bi-chat-dots-fill"></i>, label: 'AI Chat Assistant' },
+    { to: '/report', icon: <i className="bi bi-clipboard2-data-fill"></i>, label: 'Reports' },
   ];
 
   useEffect(() => {
@@ -118,7 +118,12 @@ export default function Sidebar() {
             <div className="name">{user?.username}</div>
             <div className="role">{user?.role}</div>
           </div>
-          <button className="logout-btn" onClick={handleLogout} title="Logout">↩</button>
+          <button className="logout-btn" onClick={toggleTheme} title="Toggle Theme" style={{ marginRight: '4px' }}>
+            {theme === 'light' ? <i className="bi bi-moon-fill"></i> : <i className="bi bi-sun-fill"></i>}
+          </button>
+          <button className="logout-btn" onClick={handleLogout} title="Logout">
+            <i className="bi bi-box-arrow-right"></i>
+          </button>
         </div>
       </div>
     </aside>

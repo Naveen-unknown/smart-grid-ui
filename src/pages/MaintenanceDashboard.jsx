@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { FiAlertTriangle, FiCheckCircle, FiClock, FiMapPin, FiNavigation, FiPhoneCall, FiX, FiUpload } from 'react-icons/fi';
 import axios from '../api/axios';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -156,10 +155,10 @@ export default function MaintenanceDashboard() {
 
   const getStatusBadge = (status) => {
     switch (status) {
-      case 'Assigned': return <span className="badge badge-yellow"><FiClock /> Assigned</span>;
-      case 'En Route': return <span className="badge badge-blue"><FiNavigation /> En Route</span>;
-      case 'Repairing': return <span className="badge badge-orange"><FiAlertTriangle /> Repairing</span>;
-      case 'Completed': return <span className="badge badge-green"><FiCheckCircle /> Completed</span>;
+      case 'Assigned': return <span className="badge badge-yellow"><i className="bi bi-clock-history"></i> Assigned</span>;
+      case 'En Route': return <span className="badge badge-blue"><i className="bi bi-cursor-fill"></i> En Route</span>;
+      case 'Repairing': return <span className="badge badge-orange"><i className="bi bi-exclamation-triangle-fill"></i> Repairing</span>;
+      case 'Completed': return <span className="badge badge-green"><i className="bi bi-check-circle-fill"></i> Completed</span>;
       default: return <span className="badge badge-gray">{status}</span>;
     }
   };
@@ -180,17 +179,17 @@ export default function MaintenanceDashboard() {
     <div className="page-body">
       <div className="page-header" style={{ marginBottom: '24px', position: 'relative', top: 0, padding: 0, background: 'transparent', border: 'none' }}>
         <div>
-          <h2 style={{ fontSize: '28px' }}>Smart Fault Alert & Dispatch</h2>
-          <p style={{ fontSize: '16px' }}>Maintenance Management Module</p>
+          <h2 style={{ fontSize: '28px' }}>Manage Maintenance Teams</h2>
+          <p style={{ fontSize: '16px' }}>View active teams and track ticket assignments</p>
         </div>
         <div className="header-right" style={{ display: 'flex', gap: '12px' }}>
           {(user?.role === 'Admin' || user?.role === 'Electricity Officer') && (
             <button className="btn btn-outline btn-lg" onClick={() => setShowTeamModal(true)}>
-              Manage Teams
+              <i className="bi bi-person-gear"></i> Manage Teams Roster
             </button>
           )}
           <button className="btn btn-primary btn-lg" onClick={simulateFaultAlert}>
-            Simulate Fault Alert
+            <i className="bi bi-lightning-charge-fill"></i> Simulate Fault Alert
           </button>
         </div>
       </div>
@@ -226,7 +225,7 @@ export default function MaintenanceDashboard() {
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                             <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Upload Photo Proof to Complete</span>
                             <label className="btn btn-outline btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', justifyContent: 'center' }}>
-                              <FiUpload /> Choose Photo
+                              <i className="bi bi-upload"></i> Choose Photo
                               <input 
                                 type="file" 
                                 accept="image/*" 
@@ -276,11 +275,11 @@ export default function MaintenanceDashboard() {
             <div className="modal-header" style={{ borderBottom: '1px solid rgba(239, 68, 68, 0.3)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{ background: 'rgba(239, 68, 68, 0.1)', padding: '12px', borderRadius: '50%', color: 'var(--accent-red)' }}>
-                  <FiAlertTriangle size={32} />
+                  <i className="bi bi-exclamation-triangle-fill" style={{ fontSize: '32px' }}></i>
                 </div>
                 <h2 className="modal-title" style={{ fontSize: '24px', color: 'var(--accent-red)' }}>SMART GRID ALERT</h2>
               </div>
-              <button className="close-btn" onClick={() => setShowAlertModal(false)}><FiX size={28} /></button>
+              <button className="close-btn" onClick={() => setShowAlertModal(false)}><i className="bi bi-x-lg"></i></button>
             </div>
             
             <div className="modal-body">
@@ -338,7 +337,7 @@ export default function MaintenanceDashboard() {
           <div className="modal" style={{ maxWidth: '850px', width: '90%' }}>
             <div className="modal-header">
               <h2 className="modal-title">Manage Maintenance Teams</h2>
-              <button className="close-btn" onClick={() => setShowTeamModal(false)}><FiX size={24} /></button>
+              <button className="close-btn" onClick={() => setShowTeamModal(false)}><i className="bi bi-x-lg"></i></button>
             </div>
             <div className="modal-body" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
               
@@ -414,7 +413,7 @@ export default function MaintenanceDashboard() {
           <div className="modal" style={{ maxWidth: '450px' }}>
             <div className="modal-header">
               <h2 className="modal-title">Send SMS to {smsModal.memberName}</h2>
-              <button className="close-btn" onClick={() => setSmsModal({ show: false, memberId: null, memberName: '', message: '' })}><FiX size={24} /></button>
+              <button className="close-btn" onClick={() => setSmsModal({ show: false, memberId: null, memberName: '', message: '' })}><i className="bi bi-x-lg"></i></button>
             </div>
             <form onSubmit={handleSendSms}>
               <div className="modal-body">
@@ -441,7 +440,7 @@ export default function MaintenanceDashboard() {
                 onClick={() => setPreviewImage(null)}
                 style={{ position: 'absolute', top: '-10px', right: '-10px', background: 'var(--accent-red)', color: 'white', border: 'none', borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.5)' }}
               >
-                <FiX size={20} />
+                <i className="bi bi-x-lg" style={{ fontSize: '20px' }}></i>
               </button>
               <img src={previewImage} alt="Full Size Proof" style={{ width: '100%', borderRadius: '12px', border: '4px solid var(--bg-card)' }} />
             </div>

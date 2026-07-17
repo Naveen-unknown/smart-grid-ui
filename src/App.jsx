@@ -14,6 +14,7 @@ import Reports from './pages/Reports';
 import Notifications from './pages/Notifications';
 import MaintenanceDashboard from './pages/MaintenanceDashboard';
 import TeamAlerts from './pages/TeamAlerts';
+import { useState, useEffect } from 'react';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -28,7 +29,7 @@ function ProtectedRoute({ children }) {
   return user ? children : <Navigate to="/login" replace />;
 }
 
-function AppLayout({ children }) {
+function AppLayout({ children, theme, toggleTheme }) {
   const { user } = useAuth();
   
   if (user?.role === 'Maintenance') {
@@ -41,38 +42,49 @@ function AppLayout({ children }) {
 
   return (
     <div className="app-layout">
-      <Sidebar />
+      <Sidebar theme={theme} toggleTheme={toggleTheme} />
       <div className="main-content">{children}</div>
     </div>
   );
 }
 
-function AppRoutes() {
+function AppRoutes({ theme, toggleTheme }) {
   const { user } = useAuth();
   return (
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
-      <Route path="/" element={<ProtectedRoute>{user?.role === 'Maintenance' ? <Navigate to="/team-alerts" replace /> : <AppLayout><Dashboard /></AppLayout>}</ProtectedRoute>} />
-      <Route path="/energy" element={<ProtectedRoute><AppLayout><EnergyReadings /></AppLayout></ProtectedRoute>} />
-      <Route path="/nodes" element={<ProtectedRoute><AppLayout><GridNodes /></AppLayout></ProtectedRoute>} />
-      <Route path="/faults" element={<ProtectedRoute><AppLayout><FaultManagement /></AppLayout></ProtectedRoute>} />
-      <Route path="/outages" element={<ProtectedRoute><AppLayout><OutageManagement /></AppLayout></ProtectedRoute>} />
-      <Route path="/ai-insights" element={<ProtectedRoute><AppLayout><AIInsights /></AppLayout></ProtectedRoute>} />
-      <Route path="/ai-chat" element={<ProtectedRoute><AppLayout><AIChat /></AppLayout></ProtectedRoute>} />
-      <Route path="/maintenance" element={<ProtectedRoute><AppLayout><MaintenanceDashboard /></AppLayout></ProtectedRoute>} />
-      <Route path="/team-alerts" element={<ProtectedRoute><AppLayout><TeamAlerts /></AppLayout></ProtectedRoute>} />
-      <Route path="/report" element={<ProtectedRoute><AppLayout><Reports /></AppLayout></ProtectedRoute>} />
-      <Route path="/notifications" element={<ProtectedRoute><AppLayout><Notifications /></AppLayout></ProtectedRoute>} />
+      <Route path="/" element={<ProtectedRoute>{user?.role === 'Maintenance' ? <Navigate to="/team-alerts" replace /> : <AppLayout theme={theme} toggleTheme={toggleTheme}><Dashboard /></AppLayout>}</ProtectedRoute>} />
+      <Route path="/energy" element={<ProtectedRoute><AppLayout theme={theme} toggleTheme={toggleTheme}><EnergyReadings /></AppLayout></ProtectedRoute>} />
+      <Route path="/nodes" element={<ProtectedRoute><AppLayout theme={theme} toggleTheme={toggleTheme}><GridNodes /></AppLayout></ProtectedRoute>} />
+      <Route path="/faults" element={<ProtectedRoute><AppLayout theme={theme} toggleTheme={toggleTheme}><FaultManagement /></AppLayout></ProtectedRoute>} />
+      <Route path="/outages" element={<ProtectedRoute><AppLayout theme={theme} toggleTheme={toggleTheme}><OutageManagement /></AppLayout></ProtectedRoute>} />
+      <Route path="/ai-insights" element={<ProtectedRoute><AppLayout theme={theme} toggleTheme={toggleTheme}><AIInsights /></AppLayout></ProtectedRoute>} />
+      <Route path="/ai-chat" element={<ProtectedRoute><AppLayout theme={theme} toggleTheme={toggleTheme}><AIChat /></AppLayout></ProtectedRoute>} />
+      <Route path="/maintenance" element={<ProtectedRoute><AppLayout theme={theme} toggleTheme={toggleTheme}><MaintenanceDashboard /></AppLayout></ProtectedRoute>} />
+      <Route path="/team-alerts" element={<ProtectedRoute><AppLayout theme={theme} toggleTheme={toggleTheme}><TeamAlerts /></AppLayout></ProtectedRoute>} />
+      <Route path="/report" element={<ProtectedRoute><AppLayout theme={theme} toggleTheme={toggleTheme}><Reports /></AppLayout></ProtectedRoute>} />
+      <Route path="/notifications" element={<ProtectedRoute><AppLayout theme={theme} toggleTheme={toggleTheme}><Notifications /></AppLayout></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
 
 export default function App() {
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+  };
+
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <AppRoutes theme={theme} toggleTheme={toggleTheme} />
         <Toaster
           position="top-right"
           toastOptions={{
