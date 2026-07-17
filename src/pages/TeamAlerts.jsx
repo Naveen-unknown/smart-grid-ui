@@ -136,7 +136,7 @@ export default function TeamAlerts() {
           <h1 style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '28px', color: 'var(--text-primary)' }}>
             <i className="bi bi-person-workspace" style={{ color: 'var(--accent-red)' }}></i> Team Alerts Feed
           </h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Live fault & outage dispatch assignments for Team A</p>
+          <p style={{ color: 'var(--text-secondary)' }}>Live fault & outage dispatch assignments</p>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <button onClick={handleSimulateAlert} className="btn btn-warning" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -201,6 +201,13 @@ export default function TeamAlerts() {
                 <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Ticket ID</div>
                 <div style={{ fontSize: '14px', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>{alert.ticketId}</div>
               </div>
+              
+              {alert.acceptedBy && (
+                <div>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>Accepted By</div>
+                  <div style={{ fontSize: '14px', color: 'var(--accent-blue)', fontWeight: 'bold' }}>{alert.acceptedBy}</div>
+                </div>
+              )}
             </div>
 
             <div style={{ display: 'flex', gap: '12px' }}>
