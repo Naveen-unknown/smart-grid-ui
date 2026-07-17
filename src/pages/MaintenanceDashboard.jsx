@@ -7,7 +7,6 @@ export default function MaintenanceDashboard() {
   const { user } = useAuth();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showAlertModal, setShowAlertModal] = useState(true); // Show demo alert by default
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [newMember, setNewMember] = useState({ teamId: '1', name: '', role: 'Lead Engineer', phoneNumber: '' });
   const [teams, setTeams] = useState([]);
@@ -164,7 +163,6 @@ export default function MaintenanceDashboard() {
   };
 
   const simulateFaultAlert = async () => {
-    setShowAlertModal(true);
     try {
       toast.loading("Detecting fault...", { id: "sim" });
       await axios.post('/Maintenance/simulate-alert');
@@ -268,69 +266,6 @@ export default function MaintenanceDashboard() {
           )}
         </div>
       </div>
-
-      {showAlertModal && (
-        <div className="modal-overlay">
-          <div className="modal" style={{ border: '2px solid var(--accent-red)', boxShadow: '0 0 30px rgba(239, 68, 68, 0.4)' }}>
-            <div className="modal-header" style={{ borderBottom: '1px solid rgba(239, 68, 68, 0.3)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ background: 'rgba(239, 68, 68, 0.1)', padding: '12px', borderRadius: '50%', color: 'var(--accent-red)' }}>
-                  <i className="bi bi-exclamation-triangle-fill" style={{ fontSize: '32px' }}></i>
-                </div>
-                <h2 className="modal-title" style={{ fontSize: '24px', color: 'var(--accent-red)' }}>SMART GRID ALERT</h2>
-              </div>
-              <button className="close-btn" onClick={() => setShowAlertModal(false)}><i className="bi bi-x-lg"></i></button>
-            </div>
-            
-            <div className="modal-body">
-              <div style={{ background: 'var(--bg-input)', padding: '24px', borderRadius: '12px', marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '16px' }}>High Priority Fault</h3>
-                
-                <div style={{ display: 'grid', gap: '16px', fontSize: '18px' }}>
-                  <div>
-                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '14px' }}>Location:</span>
-                    <strong style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <FiMapPin color="var(--accent-blue)" /> Transformer T-104, Anna Nagar, Chennai
-                    </strong>
-                  </div>
-                  <div>
-                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '14px' }}>Fault:</span>
-                    <strong>Transformer Overheating</strong>
-                  </div>
-                  <div>
-                    <span style={{ color: 'var(--text-secondary)', display: 'block', fontSize: '14px' }}>Severity:</span>
-                    <span className="badge badge-red" style={{ fontSize: '16px', padding: '6px 12px' }}>High</span>
-                  </div>
-                </div>
-                
-                <div style={{ marginTop: '24px', padding: '16px', background: 'rgba(245, 158, 11, 0.1)', border: '1px solid var(--accent-yellow)', borderRadius: '8px', color: 'var(--accent-yellow)', fontSize: '16px', textAlign: 'center' }}>
-                  Please acknowledge within <strong>2 minutes</strong>.
-                </div>
-                
-                <div style={{ marginTop: '16px', textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>
-                  Ticket ID: SG-2026-1024
-                </div>
-              </div>
-
-              <h4 style={{ fontSize: '18px', marginBottom: '12px', color: 'var(--text-secondary)' }}>Engineer Actions</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <button className="btn btn-success btn-lg btn-full" onClick={() => { toast.success('Job Accepted!'); setShowAlertModal(false); }}>
-                  <FiCheckCircle size={22} /> Accept Job
-                </button>
-                <button className="btn btn-danger btn-lg btn-full" onClick={() => { toast.error('Job Declined'); setShowAlertModal(false); }}>
-                  <FiX size={22} /> Decline Job
-                </button>
-                <button className="btn btn-primary btn-lg btn-full" onClick={() => window.open('https://www.google.com/maps/search/?api=1&query=13.0850,80.2101', '_blank')}>
-                  <FiNavigation size={22} /> Navigate to Location
-                </button>
-                <button className="btn btn-outline btn-lg btn-full" onClick={() => toast('Calling Control Room...', { icon: '📞' })}>
-                  <FiPhoneCall size={22} /> Call Control Room
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {showTeamModal && (
         <div className="modal-overlay">
