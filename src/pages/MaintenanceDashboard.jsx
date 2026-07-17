@@ -34,9 +34,9 @@ export default function MaintenanceDashboard() {
       setLoading(true);
       // Fallback dummy data if API is not ready
       const dummyTickets = [
-        { ticketId: 'SG-2026-1024', teamName: 'Team A', status: 'Assigned', faultDescription: 'Transformer Overheating' },
-        { ticketId: 'SG-2026-1023', teamName: 'Team B', status: 'En Route', faultDescription: 'Voltage Sag' },
-        { ticketId: 'SG-2026-1022', teamName: 'Team C', status: 'Completed', faultDescription: 'Capacitor Issue' }
+        { ticketId: 'SG-2026-1024', teamName: 'John Doe (Lead Engineer)', status: 'Assigned', faultDescription: 'Transformer Overheating' },
+        { ticketId: 'SG-2026-1023', teamName: 'Sarah Smith (Field Technician)', status: 'En Route', faultDescription: 'Voltage Sag' },
+        { ticketId: 'SG-2026-1022', teamName: 'Mike Johnson (Lineman)', status: 'Completed', faultDescription: 'Capacitor Issue' }
       ];
       setTickets(dummyTickets);
       
@@ -164,16 +164,7 @@ export default function MaintenanceDashboard() {
     }
   };
 
-  const simulateFaultAlert = async () => {
-    try {
-      toast.loading("Detecting fault...", { id: "sim" });
-      await axios.post('/Maintenance/simulate-alert');
-      toast.success("Fault detected and team assigned!", { id: "sim" });
-      fetchTickets();
-    } catch(err) {
-      toast.error("Simulation failed", { id: "sim" });
-    }
-  };
+
 
   return (
     <div className="page-body">
@@ -188,9 +179,6 @@ export default function MaintenanceDashboard() {
               <i className="bi bi-person-gear"></i> Manage Teams Roster
             </button>
           )}
-          <button className="btn btn-primary btn-lg" onClick={simulateFaultAlert}>
-            <i className="bi bi-lightning-charge-fill"></i> Simulate Fault Alert
-          </button>
         </div>
       </div>
 

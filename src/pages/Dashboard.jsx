@@ -93,7 +93,7 @@ export default function Dashboard() {
             <div className="stat-icon-wrap" style={{ background: 'rgba(16,185,129,0.12)' }}>⚡</div>
             <div className="stat-content">
               <div className="stat-label">Today Consumption</div>
-              <div className="stat-value">{(energy?.todayConsumption ?? 0).toLocaleString(undefined, { maximumFractionDigits: 1 })}</div>
+              <div className="stat-value">{(energy?.todayConsumption ?? 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}</div>
               <div className="stat-sub">kWh</div>
             </div>
           </div>
