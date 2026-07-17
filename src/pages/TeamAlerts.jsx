@@ -67,6 +67,16 @@ export default function TeamAlerts() {
     }
   };
 
+  const handleSimulateAlert = async () => {
+    try {
+      await axios.post('/Maintenance/simulate-alert');
+      toast.success('Simulated fault triggered!');
+      fetchTeamAlerts();
+    } catch (err) {
+      toast.error('Failed to simulate alert.');
+    }
+  };
+
   const fetchTeamAlerts = async () => {
     try {
       const response = await axios.get('/Maintenance/tickets');
@@ -128,9 +138,20 @@ export default function TeamAlerts() {
           </h1>
           <p style={{ color: 'var(--text-secondary)' }}>Live fault & outage dispatch assignments for Team A</p>
         </div>
-        <button onClick={logout} className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <i className="bi bi-box-arrow-right"></i> Logout
-        </button>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <button onClick={handleSimulateAlert} className="btn btn-warning" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <i className="bi bi-lightning-charge-fill"></i> Simulate Alert
+          </button>
+          <button onClick={() => {
+            if (profile) setProfileForm({ name: profile.name, role: profile.role, phoneNumber: profile.phoneNumber, teamId: profile.teamId });
+            setShowProfileModal(true);
+          }} className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <i className="bi bi-person-circle"></i> My Profile
+          </button>
+          <button onClick={logout} className="btn btn-outline" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <i className="bi bi-box-arrow-right"></i> Logout
+          </button>
+        </div>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -244,10 +265,11 @@ export default function TeamAlerts() {
         <div className="modal-overlay">
           <div className="modal" style={{ maxWidth: '400px' }}>
             <div className="modal-header">
-              <h2 className="modal-title">Setup Your Profile</h2>
+              <h2 className="modal-title">{profile ? "My Profile" : "Setup Your Profile"}</h2>
+              {profile && <button className="close-btn" onClick={() => setShowProfileModal(false)}><i className="bi bi-x-lg"></i></button>}
             </div>
             <div className="modal-body">
-              <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>Please complete your profile to continue receiving alerts.</p>
+              {!profile && <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>Please complete your profile to continue receiving alerts.</p>}
               <form onSubmit={handleSaveProfile}>
                 <div className="form-group" style={{ marginBottom: '16px' }}>
                   <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Full Name</label>
