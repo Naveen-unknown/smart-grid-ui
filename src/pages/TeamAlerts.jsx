@@ -165,14 +165,14 @@ export default function TeamAlerts() {
 
   return (
     <div className="page-container" style={{ padding: '24px', maxWidth: '1000px', margin: '0 auto' }}>
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px', marginBottom: '32px' }}>
         <div>
-          <h1 style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '28px', color: 'var(--text-primary)' }}>
+          <h1 style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '24px', color: 'var(--text-primary)', margin: 0 }}>
             <i className="bi bi-person-workspace" style={{ color: 'var(--accent-red)' }}></i> Team Alerts Feed
           </h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Live fault & outage dispatch assignments</p>
+          <p style={{ color: 'var(--text-secondary)', margin: '4px 0 0 0', fontSize: '14px' }}>Live fault & outage dispatch assignments</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
           <button onClick={handleSimulateAlert} className="btn btn-warning" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <i className="bi bi-lightning-charge-fill"></i> Simulate Alert
           </button>
