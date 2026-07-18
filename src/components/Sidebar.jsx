@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { notificationsAPI } from '../api/services';
 import toast from 'react-hot-toast';
@@ -7,7 +7,9 @@ import toast from 'react-hot-toast';
 export default function Sidebar({ theme, toggleTheme }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const navItems = user?.role === 'Maintenance Team' ? [
     { to: '/', icon: <i className="bi bi-bell-fill" style={{ color: 'var(--accent-yellow)' }}></i>, label: 'Team Alerts', end: true }
@@ -27,11 +29,15 @@ export default function Sidebar({ theme, toggleTheme }) {
   useEffect(() => {
     if (user) {
       fetchUnreadCount();
-      // Poll every 10 seconds for new alerts
       const interval = setInterval(fetchUnreadCount, 10000);
       return () => clearInterval(interval);
     }
   }, [user]);
+
+  // Close sidebar on navigation in mobile
+  useEffect(() => {
+    setIsMobileOpen(false);
+  }, [location.pathname]);
 
   const fetchUnreadCount = async () => {
     try {
@@ -52,82 +58,93 @@ export default function Sidebar({ theme, toggleTheme }) {
   };
 
   return (
-    <aside className="sidebar">
-      <div className="sidebar-logo" style={{ padding: '24px 20px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px' }}>
-        <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 'bold', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <i className="bi bi-lightning-charge-fill" style={{ color: 'var(--accent-blue)' }}></i> Smart Grid
-        </h2>
-      </div>
+    <>
+      <button className="mobile-toggle" onClick={() => setIsMobileOpen(!isMobileOpen)}>
+        <i className={`bi ${isMobileOpen ? 'bi-x-lg' : 'bi-list'}`}></i>
+      </button>
+      
+      <div 
+        className={`sidebar-overlay ${isMobileOpen ? 'open' : ''}`} 
+        onClick={() => setIsMobileOpen(false)}
+      ></div>
 
-      <nav className="sidebar-nav">
-        {user?.role === 'Maintenance Team' ? (
-          <>
-            <div className="nav-section-label">Team Portal</div>
-            {navItems.map(item => (
-              <NavLink key={item.to} to={item.to} end={item.end}
-                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                <span className="nav-icon">{item.icon}</span>
-                {item.label}
-              </NavLink>
-            ))}
-          </>
-        ) : (
-          <>
-            <div className="nav-section-label">Main Menu</div>
-            {navItems.slice(0, 2).map(item => (
-              <NavLink key={item.to} to={item.to} end={item.end}
-                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                <span className="nav-icon">{item.icon}</span>
-                {item.label}
-              </NavLink>
-            ))}
-
-            <div className="nav-section-label" style={{ marginTop: '8px' }}>Grid Management</div>
-            {navItems.slice(2, 7).map(item => (
-              <NavLink key={item.to} to={item.to}
-                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                <span className="nav-icon">{item.icon}</span>
-                <span style={{ flex: 1 }}>{item.label}</span>
-                {item.to === '/notifications' && unreadCount > 0 && (
-                  <span style={{
-                    background: '#ef4444',
-                    color: 'white',
-                    padding: '2px 6px',
-                    borderRadius: '10px',
-                    fontSize: '11px',
-                    fontWeight: 'bold'
-                  }}>{unreadCount}</span>
-                )}
-              </NavLink>
-            ))}
-
-            <div className="nav-section-label" style={{ marginTop: '8px' }}>Analytics</div>
-            {navItems.slice(7).map(item => (
-              <NavLink key={item.to} to={item.to}
-                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-                <span className="nav-icon">{item.icon}</span>
-                {item.label}
-              </NavLink>
-            ))}
-          </>
-        )}
-      </nav>
-
-      <div className="sidebar-footer">
-        <div className="user-card">
-          <div className="user-avatar">{user?.username?.[0]?.toUpperCase() || 'U'}</div>
-          <div className="user-info">
-            <div className="name">{user?.username}</div>
-            <div className="role">{user?.role}</div>
-          </div>
-          <button className="logout-btn" onClick={toggleTheme} title="Toggle Theme" style={{ marginRight: '4px' }}>
-            {theme === 'light' ? <i className="bi bi-moon-fill"></i> : <i className="bi bi-sun-fill"></i>}
-          </button>
-          <button className="logout-btn" onClick={handleLogout} title="Logout">
-            <i className="bi bi-box-arrow-right"></i>
-          </button>
+      <aside className={`sidebar ${isMobileOpen ? 'open' : ''}`}>
+        <div className="sidebar-logo" style={{ padding: '24px 20px', borderBottom: '1px solid var(--border-color)', marginBottom: '16px' }}>
+          <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 'bold', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <i className="bi bi-lightning-charge-fill" style={{ color: 'var(--accent-blue)' }}></i> Smart Grid
+          </h2>
         </div>
-      </div>
-    </aside>
+
+        <nav className="sidebar-nav">
+          {user?.role === 'Maintenance Team' ? (
+            <>
+              <div className="nav-section-label">Team Portal</div>
+              {navItems.map(item => (
+                <NavLink key={item.to} to={item.to} end={item.end}
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                  <span className="nav-icon">{item.icon}</span>
+                  {item.label}
+                </NavLink>
+              ))}
+            </>
+          ) : (
+            <>
+              <div className="nav-section-label">Main Menu</div>
+              {navItems.slice(0, 2).map(item => (
+                <NavLink key={item.to} to={item.to} end={item.end}
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                  <span className="nav-icon">{item.icon}</span>
+                  {item.label}
+                </NavLink>
+              ))}
+
+              <div className="nav-section-label" style={{ marginTop: '8px' }}>Grid Management</div>
+              {navItems.slice(2, 7).map(item => (
+                <NavLink key={item.to} to={item.to}
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                  <span className="nav-icon">{item.icon}</span>
+                  <span style={{ flex: 1 }}>{item.label}</span>
+                  {item.to === '/notifications' && unreadCount > 0 && (
+                    <span style={{
+                      background: '#ef4444',
+                      color: 'white',
+                      padding: '2px 6px',
+                      borderRadius: '10px',
+                      fontSize: '11px',
+                      fontWeight: 'bold'
+                    }}>{unreadCount}</span>
+                  )}
+                </NavLink>
+              ))}
+
+              <div className="nav-section-label" style={{ marginTop: '8px' }}>Analytics</div>
+              {navItems.slice(7).map(item => (
+                <NavLink key={item.to} to={item.to}
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+                  <span className="nav-icon">{item.icon}</span>
+                  {item.label}
+                </NavLink>
+              ))}
+            </>
+          )}
+        </nav>
+
+        <div className="sidebar-footer">
+          <div className="user-card">
+            <div className="user-avatar">{user?.username?.[0]?.toUpperCase() || 'U'}</div>
+            <div className="user-info">
+              <div className="name">{user?.username}</div>
+              <div className="role">{user?.role}</div>
+            </div>
+            <button className="logout-btn" onClick={toggleTheme} title="Toggle Theme" style={{ marginRight: '4px' }}>
+              {theme === 'light' ? <i className="bi bi-moon-fill"></i> : <i className="bi bi-sun-fill"></i>}
+            </button>
+            <button className="logout-btn" onClick={handleLogout} title="Logout">
+              <i className="bi bi-box-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </aside>
+    </>
   );
 }
