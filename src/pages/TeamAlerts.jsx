@@ -232,10 +232,10 @@ export default function TeamAlerts() {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                   <button 
                     className="btn btn-success btn-lg" 
-                    style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '8px' }}
+                    style={{ flex: '1 1 200px', display: 'flex', justifyContent: 'center', gap: '8px' }}
                     onClick={() => handleAcceptJob(alert.ticketId)}
                   >
                     <i className="bi bi-check-circle-fill"></i> Accept Job
@@ -295,11 +295,11 @@ export default function TeamAlerts() {
                   )}
                 </div>
 
-                <div style={{ display: 'flex', gap: '12px' }}>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
                   <button 
                     className="btn btn-success btn-lg" 
                     disabled
-                    style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '8px', opacity: 0.7 }}
+                    style={{ flex: '1 1 150px', display: 'flex', justifyContent: 'center', gap: '8px', opacity: 0.7 }}
                   >
                     <i className="bi bi-check-circle-fill"></i> Accepted
                   </button>
@@ -307,18 +307,18 @@ export default function TeamAlerts() {
                   {alert.status === 'En Route' && (
                     <button 
                       className="btn btn-warning btn-lg" 
-                      style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '8px' }}
+                      style={{ flex: '1 1 200px', display: 'flex', justifyContent: 'center', gap: '8px' }}
                       onClick={() => {
                         setActiveTicket(alert);
                         setShowResolveModal(true);
                       }}
                     >
-                      <i className="bi bi-camera-fill"></i> Resolve & Upload Proof
+                      <i className="bi bi-camera-fill"></i> Resolve & Upload
                     </button>
                   )}
                   <button 
                     className="btn btn-primary btn-lg" 
-                    style={{ flex: 1, display: 'flex', justifyContent: 'center', gap: '8px' }}
+                    style={{ flex: '1 1 150px', display: 'flex', justifyContent: 'center', gap: '8px' }}
                     onClick={() => openMap(alert)}
                   >
                     <i className="bi bi-geo-alt-fill"></i> View Map
