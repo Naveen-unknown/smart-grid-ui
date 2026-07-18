@@ -75,7 +75,9 @@ export default function TeamAlerts() {
     const rawTicketId = activeTicket.ticketId.toString().split('-').pop();
     
     try {
-      await axios.post(`/Maintenance/ticket/${rawTicketId}/upload-proof`, formData);
+      await axios.post(`/Maintenance/ticket/${rawTicketId}/upload-proof`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       toast.success('Job marked as completed pending verification!');
       setShowResolveModal(false);
       setProofPhoto(null);
